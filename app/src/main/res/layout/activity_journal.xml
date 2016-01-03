@@ -9,12 +9,21 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="de.jan.ledgerjournal.JournalActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hallo! Hier kommt der ganze Spaß rein!"
-        android:id="@+id/journalText"
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/journalListView"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/journalFab"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_input_add" />
 </RelativeLayout>

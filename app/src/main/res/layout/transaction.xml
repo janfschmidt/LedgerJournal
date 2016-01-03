@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="2016/01/01"
+            android:id="@+id/transactDate"
+            android:layout_gravity="left|top" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Payee"
+            android:id="@+id/transactPayee"
+            android:layout_gravity="left"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Expanses:MyAccount"
+            android:id="@+id/entryAccount"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_weight="1"
+            android:singleLine="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PRE"
+            android:id="@+id/entryPreCurrency"
+            android:layout_gravity="right"
+            android:layout_marginRight="@dimen/journal_unit_distance"
+            android:singleLine="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10,00"
+            android:id="@+id/entryAmount"
+            android:layout_gravity="right"
+            android:numeric="signed|decimal"
+            android:singleLine="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="POST"
+            android:id="@+id/entryPostCurrency"
+            android:layout_gravity="left"
+            android:layout_marginLeft="@dimen/journal_unit_distance"
+            android:singleLine="true" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
