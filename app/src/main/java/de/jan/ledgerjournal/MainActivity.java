@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Log.d("topf Click", position + ": " + topfList.get(position));
         Intent i = new Intent(MainActivity.this, JournalActivity.class);
+        i.putExtra("topf", topfList.get(position).toString());
         startActivity(i);
     }
 
