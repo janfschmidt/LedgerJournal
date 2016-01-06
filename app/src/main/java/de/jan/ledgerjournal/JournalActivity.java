@@ -1,6 +1,7 @@
 package de.jan.ledgerjournal;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ public class JournalActivity extends AppCompatActivity {
     TransactionsAdapter journalAdapter;
     ArrayList<Transaction> journalList = new ArrayList<Transaction>();
 
+    JournalDataSource dataSource;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +32,10 @@ public class JournalActivity extends AppCompatActivity {
         String topfName = bundle.getString("topf");
 
         this.setTitle(topfName);
+
+        dataSource = new JournalDataSource(this);
+        dataSource.open();
+        dataSource.close();
 
         //attaching TransactionsAdapter to journalList
         journalListView = (ListView) findViewById(R.id.journalListView);
@@ -45,6 +52,8 @@ public class JournalActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addTransaction();
+                Intent i = new Intent(JournalActivity.this, TransactionActivity.class);
+                startActivityForResult(i, 1);
             }
         });
     }
@@ -56,28 +65,6 @@ public class JournalActivity extends AppCompatActivity {
     }
 
 }
-
-
-
-
-class Transaction {
-    public String date;
-    public String payee;
-    public String account;
-    public String preCurrency;
-    public String postCurrency;
-    public double amount;
-
-    public Transaction(String date, String payee, String account, double amount, String preCurrency, String postCurrency) {
-        this.date = date;
-        this.payee = payee;
-        this.account = account;
-        this.preCurrency = preCurrency;
-        this.amount = amount;
-        this.postCurrency = postCurrency;
-    }
-}
-
 
 
 class TransactionsAdapter extends ArrayAdapter<Transaction> {
