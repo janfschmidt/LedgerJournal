@@ -27,7 +27,7 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
 
         dateText = (EditText) findViewById(R.id.editDate);
 
-        this.setTitle("add new Transaction");
+        this.setTitle("Add new Transaction");
 
         c = Calendar.getInstance();
         dateFormater = new SimpleDateFormat("yyyy/MM/dd");

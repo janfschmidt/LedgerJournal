@@ -59,7 +59,7 @@ public class JournalActivity extends AppCompatActivity {
     }
 
     public void addTransaction() {
-        Transaction tmp = new Transaction("2015/12/24", "Weihnachtsmann", "Ausgaben:Geschenke", 101.42, "", "€");
+        Transaction tmp = new Transaction("2015/12/24", "Weihnachtsmann\n mein Freund", "Ausgaben:Geschenke:Spaß mit Soße und ganz viel Zeug", 101.42, "", "€");
         journalList.add(tmp);
         journalAdapter.notifyDataSetChanged();
     }
