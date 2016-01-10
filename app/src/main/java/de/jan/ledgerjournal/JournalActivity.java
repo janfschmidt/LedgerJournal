@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -18,7 +19,9 @@ public class JournalActivity extends AppCompatActivity {
 
     ListView journalListView;
     TransactionsAdapter journalAdapter;
-    ArrayList<Transaction> journalList = new ArrayList<Transaction>();
+    ArrayList<Transaction> journalList = new ArrayList<>();
+    String topfName;
+    int topfId;
 
     JournalDataSource dataSource;
 
@@ -29,42 +32,64 @@ public class JournalActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Up-Button
 
         Bundle bundle = getIntent().getExtras();
-        String topfName = bundle.getString("topf");
+        topfName = bundle.getString("topfName");
+        topfId = bundle.getInt("topfId");
 
         this.setTitle(topfName);
 
         dataSource = new JournalDataSource(this);
-        dataSource.open();
-        dataSource.close();
 
         //attaching TransactionsAdapter to journalList
         journalListView = (ListView) findViewById(R.id.journalListView);
         journalAdapter = new TransactionsAdapter(this, journalList);
         journalListView.setAdapter(journalAdapter);
 
-        //populate list
-        Transaction tmp = new Transaction("2015/12/24", "Weihnachtsmann", "Ausgaben:Geschenke", 101.42, "", "€");
-        journalList.add(tmp);
-        journalAdapter.notifyDataSetChanged();
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.journalFab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addTransaction();
+                //addTransaction();
                 Intent i = new Intent(JournalActivity.this, TransactionActivity.class);
-                startActivityForResult(i, 1);
+                i.putExtra("topfName", topfName);
+                i.putExtra("topfId", topfId);
+                startActivity(i);
             }
         });
     }
 
+    protected void onStart() {
+        super.onStart();
+
+        //populate list
+        /*
+        Transaction tmp = new Transaction("2015/12/24", "Weihnachtsmann", "Ausgaben:Geschenke", 101.42, "€");
+        journalList.add(tmp);
+        journalAdapter.notifyDataSetChanged();
+        */
+        showAllJournalTransactions();
+    }
+
     public void addTransaction() {
-        Transaction tmp = new Transaction("2015/12/24", "Weihnachtsmann\n mein Freund", "Ausgaben:Geschenke:Spaß mit Soße und ganz viel Zeug", 101.42, "", "€");
+        Posting[] p = new Posting[2];
+        p[0].account = "Ausgaben:Geschenke:Spaß mit Soße und ganz viel Zeug";
+        p[0].amount = 101.42;
+        Transaction tmp = new Transaction("2015/12/24", "Weihnachtsmann\n mein Freund", p, "€");
         journalList.add(tmp);
         journalAdapter.notifyDataSetChanged();
     }
 
+    private void showAllJournalTransactions() {
+        dataSource.open();
+        ArrayList<Transaction> transactions = dataSource.getAllTransactions(topfId);
+        journalList.clear();
+        journalList.addAll(transactions);
+        journalAdapter.notifyDataSetChanged();
+        dataSource.close();
+    }
+
 }
+
+
 
 
 class TransactionsAdapter extends ArrayAdapter<Transaction> {
@@ -86,19 +111,36 @@ class TransactionsAdapter extends ArrayAdapter<Transaction> {
         // Lookup view for data population
         TextView date = (TextView) convertView.findViewById(R.id.transactDate);
         TextView payee = (TextView) convertView.findViewById(R.id.transactPayee);
+        LinearLayout postings = (LinearLayout) convertView.findViewById(R.id.postingsLayout);
         TextView account = (TextView) convertView.findViewById(R.id.entryAccount);
-        TextView amount = (TextView) convertView.findViewById(R.id.entryAmount);
-        TextView preCurrency = (TextView) convertView.findViewById(R.id.entryPreCurrency);
-        TextView postCurrency = (TextView) convertView.findViewById(R.id.entryPostCurrency);
+        TextView value = (TextView) convertView.findViewById(R.id.entryValue);
+        TextView account2 = (TextView) convertView.findViewById(R.id.entryAccount2);
+        TextView value2 = (TextView) convertView.findViewById(R.id.entryValue2);
+
+
         // Populate the data into the template view using the data object
         date.setText(t.date);
         payee.setText(t.payee);
-        account.setText(t.account);
-        amount.setText(String.format("%1$,.2f",t.amount));
-        preCurrency.setText(t.preCurrency);
-        postCurrency.setText(t.postCurrency);
+
+       /* //for each posting, linearlayout created from code in PostingsLayout class. Not working...
+        PostingLayout p = new PostingLayout(getContext());
+        p.setAccount(t.account);
+        p.setValue("25.42 €");
+        postings.addView(p);*/
+
+        account.setText(t.postings[0].account);
+        value.setText(getValueString(t.postings[0].amount, t.currency));
+        account2.setText(t.postings[1].account);
+        value2.setText(getValueString(t.postings[1].amount, t.currency));
 
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    private String getValueString(double amount, String currency) {
+        if (amount == 0.0)
+            return "";
+        else
+            return String.format("%.2f %s", amount, currency);
     }
 }

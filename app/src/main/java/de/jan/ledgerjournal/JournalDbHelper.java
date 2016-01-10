@@ -15,33 +15,33 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     public static final String TABLE_JOURNAL = "journal";
 
     public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_JOURNALID = "journalid";
+    public static final String COLUMN_TOPFID = "topfid";
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_PAYEE = "payee";
+    public static final String COLUMN_ACC0 = "acc0";
     public static final String COLUMN_ACC1 = "acc1";
     public static final String COLUMN_ACC2 = "acc2";
     public static final String COLUMN_ACC3 = "acc3";
-    public static final String COLUMN_ACC4 = "acc4";
+    public static final String COLUMN_VAL0 = "val0";
     public static final String COLUMN_VAL1 = "val1";
-    public static final String COLUMN_VAL2= "val2";
+    public static final String COLUMN_VAL2 = "val2";
     public static final String COLUMN_VAL3 = "val3";
-    public static final String COLUMN_VAL4 = "val4";
     public static final String COLUMN_CURRENCY = "currency";
 
     public static final String SQL_CREATE =
             "CREATE TABLE " + TABLE_JOURNAL + "(" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    COLUMN_JOURNALID + " INTEGER NOT NULL, " +
+                    COLUMN_TOPFID + " INTEGER NOT NULL, " +
                     COLUMN_DATE + " TEXT NOT NULL, " +
                     COLUMN_PAYEE + " TEXT NOT NULL, " +
+                    COLUMN_ACC0 + " TEXT NOT NULL, " +
+                    COLUMN_VAL0 + " FLOAT, " +           // values are optional (added to zero by ledger)
                     COLUMN_ACC1 + " TEXT NOT NULL, " +
-                    COLUMN_VAL1 + " FLOAT, " +           // values are optional (added to zero by ledger)
-                    COLUMN_ACC2 + " TEXT NOT NULL, " +
+                    COLUMN_VAL1 + " FLOAT, " +
+                    COLUMN_ACC2 + " TEXT, " +            // two accounts needed, more optional
                     COLUMN_VAL2 + " FLOAT, " +
-                    COLUMN_ACC3 + " TEXT, " +            // two accounts needed, more optional
+                    COLUMN_ACC3 + " TEXT, " +
                     COLUMN_VAL3 + " FLOAT, " +
-                    COLUMN_ACC4 + " TEXT, " +
-                    COLUMN_VAL4 + " FLOAT, " +
                     COLUMN_CURRENCY + " TEXT NOT NULL);";
 
 
@@ -64,5 +64,9 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+    }
+
+    public static String getTopfFilter(int topfid) {
+        return COLUMN_TOPFID + "=" + topfid;
     }
 }

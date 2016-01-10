@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:inputType="date"
             android:ems="10"
-            android:id="@+id/editDate"
+            android:id="@+id/inputDate"
             android:hint="Date" />
 
         <AutoCompleteTextView
@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Your:Account"
-                android:id="@+id/inputAcc1"
+                android:id="@+id/inputAcc0"
                 android:layout_weight="3"
                 android:layout_gravity="left" />
             <EditText
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal|numberSigned"
                 android:ems="10"
-                android:id="@+id/inputVal1"
+                android:id="@+id/inputVal0"
                 android:layout_weight="8"
                 android:layout_gravity="right"
                 android:gravity="right"
@@ -72,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Your:Other:Account"
-                android:id="@+id/inputAcc2"
+                android:id="@+id/inputAcc1"
                 android:layout_weight="3"
                 android:layout_gravity="left" />
             <EditText
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal|numberSigned"
                 android:ems="10"
-                android:id="@+id/inputVal2"
+                android:id="@+id/inputVal1"
                 android:layout_weight="8"
                 android:layout_gravity="right"
                 android:gravity="right"
