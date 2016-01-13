@@ -85,10 +85,8 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         t.date = inputDate.getText().toString();
         t.payee = inputPayee.getText().toString();
         t.currency = "€";
-        t.postings[0].account = inputAcc0.getText().toString();
-        t.postings[0].amount = parseAmount(inputVal0.getText().toString());
-        t.postings[1].account = inputAcc1.getText().toString();
-        t.postings[1].amount = parseAmount(inputVal1.getText().toString());
+        t.addPosting( inputAcc0.getText().toString(), parseAmount(inputVal0.getText().toString()) );
+        t.addPosting( inputAcc1.getText().toString(), parseAmount(inputVal1.getText().toString()) );
 
         //write transaction to database
         dataSource.open();

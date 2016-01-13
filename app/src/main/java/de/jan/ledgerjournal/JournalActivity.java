@@ -128,10 +128,10 @@ class TransactionsAdapter extends ArrayAdapter<Transaction> {
         p.setValue("25.42 €");
         postings.addView(p);*/
 
-        account.setText(t.postings[0].account);
-        value.setText(getValueString(t.postings[0].amount, t.currency));
-        account2.setText(t.postings[1].account);
-        value2.setText(getValueString(t.postings[1].amount, t.currency));
+        account.setText(t.posting(0).account);
+        value.setText(getValueString(t.posting(0).amount, t.currency));
+        account2.setText(t.posting(1).account);
+        value2.setText(getValueString(t.posting(1).amount, t.currency));
 
         // Return the completed view to render on screen
         return convertView;

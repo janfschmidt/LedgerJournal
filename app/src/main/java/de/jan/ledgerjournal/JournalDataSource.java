@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaActionSound;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -15,19 +16,6 @@ public class JournalDataSource {
     private SQLiteDatabase db;
     private JournalDbHelper dbHelper;
 
-    private static final String[] columns = {
-            JournalDbHelper.COLUMN_DATE,
-            JournalDbHelper.COLUMN_PAYEE,
-            JournalDbHelper.COLUMN_ACC0,
-            JournalDbHelper.COLUMN_ACC1,
-            JournalDbHelper.COLUMN_ACC2,
-            JournalDbHelper.COLUMN_ACC3,
-            JournalDbHelper.COLUMN_VAL0,
-            JournalDbHelper.COLUMN_VAL1,
-            JournalDbHelper.COLUMN_VAL2,
-            JournalDbHelper.COLUMN_VAL3,
-            JournalDbHelper.COLUMN_CURRENCY
-    };
 
     public JournalDataSource(Context context) {
         dbHelper = new JournalDbHelper(context);
@@ -60,28 +48,20 @@ public class JournalDataSource {
         String payee = getString(cursor, JournalDbHelper.COLUMN_PAYEE);
         String currency = getString(cursor, JournalDbHelper.COLUMN_CURRENCY);
 
-        Posting[] p = new Posting[4];
-        for (int i=0; i<p.length; i++)
-            p[i] = new Posting();
-        p[0].account = getString(cursor, JournalDbHelper.COLUMN_ACC0);
-        p[0].amount = getDouble(cursor, JournalDbHelper.COLUMN_VAL0);
-        p[1].account = getString(cursor, JournalDbHelper.COLUMN_ACC1);
-        p[1].amount = getDouble(cursor, JournalDbHelper.COLUMN_VAL1);
-        p[2].account = getString(cursor, JournalDbHelper.COLUMN_ACC2);
-        p[2].amount = getDouble(cursor, JournalDbHelper.COLUMN_VAL2);
-        p[3].account = getString(cursor, JournalDbHelper.COLUMN_ACC3);
-        p[3].amount = getDouble(cursor, JournalDbHelper.COLUMN_VAL3);
-        for (Posting pp : p) pp.currency = currency;
+        Transaction t = new Transaction(date,payee, currency);
+        for (int i=0; i<JournalDbHelper.MAX_POSTINGS; i++) {
+            t.addPosting(getString(cursor, JournalDbHelper.columnAcc(i)), getDouble(cursor, JournalDbHelper.columnVal(i)));
+            Log.d("cursorToTransaction", "Posting " + i + ": " + t.posting(i).print());
+        }
 
-        Log.d("cursorToTransaction", "Postings: " + p[0].account + ", " + p[1].account);
-        return new Transaction(date, payee, p, currency);
+        return t;
     }
 
 
     // get list of all Transactions from given Topf - e.g. to populate ListView
     public ArrayList<Transaction> getAllTransactions(int topfid) {
         ArrayList<Transaction> list = new ArrayList<>();
-        Cursor cursor = db.query(JournalDbHelper.TABLE_JOURNAL, columns, JournalDbHelper.getTopfFilter(topfid), null, null, null, null);
+        Cursor cursor = db.query(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.columns(), JournalDbHelper.getTopfFilter(topfid), null, null, null, null);
         Log.d("JournalDataSource", cursor.getCount() + " db-Einträge fuer Topfid " + topfid + " gelesen.");
 
         cursor.moveToFirst();
@@ -100,17 +80,13 @@ public class JournalDataSource {
         cv.put(JournalDbHelper.COLUMN_TOPFID, topfid);
         cv.put(JournalDbHelper.COLUMN_DATE, t.date);
         cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
-        cv.put(JournalDbHelper.COLUMN_ACC0, t.postings[0].account);
-        cv.put(JournalDbHelper.COLUMN_ACC1, t.postings[1].account);
-        cv.put(JournalDbHelper.COLUMN_ACC2, t.postings[2].account);
-        cv.put(JournalDbHelper.COLUMN_ACC3, t.postings[3].account);
-        cv.put(JournalDbHelper.COLUMN_VAL0, t.postings[0].amount);
-        cv.put(JournalDbHelper.COLUMN_VAL1, t.postings[1].amount);
-        cv.put(JournalDbHelper.COLUMN_VAL2, t.postings[2].amount);
-        cv.put(JournalDbHelper.COLUMN_VAL3, t.postings[3].amount);
         cv.put(JournalDbHelper.COLUMN_CURRENCY, t.currency);
+        for (int i=0; i<t.numPostings(); i++) {
+            cv.put(JournalDbHelper.columnAcc(i), t.posting(i).account);
+            cv.put(JournalDbHelper.columnVal(i), t.posting(i).amount);
+        }
 
         long insertid = db.insert(JournalDbHelper.TABLE_JOURNAL, null, cv);
-        Log.d("JournalDataSource", "db entry added with insert id=" +  insertid);
+        Log.d("JournalDataSource", "db entry added with insert id " + insertid);
     }
 }

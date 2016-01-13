@@ -2,35 +2,45 @@ package de.jan.ledgerjournal;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class Transaction {
     public String date;
     public String payee;
     public String currency;
-    public Posting[] postings = new Posting[4];
+    protected ArrayList<Posting> postings = new ArrayList<Posting>();
 
     public Transaction(String date, String payee, String currency){
         this.date = date;
         this.payee = payee;
         this.currency = currency;
-        for (int i=0; i<postings.length; i++) {
-            Log.d("Transaction Constructor", "init Posting " + i);
-            postings[i] = new Posting();
-        }
     }
 
     public Transaction(String date, String payee, Posting[] postings, String currency){
         this(date,payee,currency);
-
-        if (postings.length > this.postings.length)
-            throw new RuntimeException("Illegal number of postings given to Transaction");
-        else {
-            for (int i=0; i<postings.length; i++)
-                this.postings[i] = postings[i];
-        }
+        for (Posting p : postings)
+            this.addPosting(p);
     }
 
     public Transaction() {
         this("2016/01/01", "Mr X", "€");
+    }
+
+    public Posting posting(int index) {return postings.get(index);}
+    public int numPostings() {return postings.size();}
+
+    public void addPosting(Posting p){
+        if (postings.size() >= JournalDbHelper.MAX_POSTINGS)
+            throw new RuntimeException("Maximum number of postings per Transaction reached! addPosting() aborted.");
+        else
+            postings.add(p);
+    }
+    public void addPosting(String account, double amount){
+        this.addPosting(new Posting(account, amount,this.currency));
+    }
+
+    public void deletePosting(int index) {
+        postings.remove(index);
     }
 }
 
@@ -50,5 +60,8 @@ class Posting {
     }
     public Posting(String account, double amount) {
         this(account, amount, "€");
+    }
+    public String print() {
+        return account + "\t" + amount + " " + currency;
     }
 }
