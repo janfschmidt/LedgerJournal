@@ -9,7 +9,7 @@ import android.util.Log;
 import java.util.ArrayList;
 
 /**
- * Created by jan on 06.01.16. From http://www.programmierenlernenhq.de/sqlite-datenbank-in-android-app-integrieren/
+ * Created by jan on 23.01.16. From http://www.programmierenlernenhq.de/sqlite-datenbank-in-android-app-integrieren/
  */
 public class ToepfeDataSource {
     private SQLiteDatabase db;

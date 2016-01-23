@@ -1,12 +1,10 @@
 package de.jan.ledgerjournal;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,13 +107,13 @@ class TransactionsAdapter extends ArrayAdapter<Transaction> {
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.transaction, parent, false);
 
-            LinearLayout postings = (LinearLayout) view.findViewById(R.id.postingsLayout);
-            //for each posting, postingslayout created
+            LinearLayout transactionLayout = (LinearLayout) view.findViewById(R.id.transactionLayout);
+            //for each posting, PostingLayout is created
             for (Posting p : t.postings) {
                 PostingLayout pl = new PostingLayout(getContext());
                 pl.setAccount(p.account);
                 pl.setValue(p.value());
-                postings.addView(pl);
+                transactionLayout.addView(pl);
             }
         }
 

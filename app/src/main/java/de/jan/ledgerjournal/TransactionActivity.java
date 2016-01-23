@@ -2,29 +2,30 @@ package de.jan.ledgerjournal;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class TransactionActivity extends AppCompatActivity implements View.OnClickListener {
+public class TransactionActivity extends AppCompatActivity {
     String topfName;
     int topfId;
 
+    LinearLayout inputLayout;
     EditText inputDate;
     AutoCompleteTextView inputPayee;
-    AutoCompleteTextView inputAcc0;
-    EditText inputVal0;
-    AutoCompleteTextView inputAcc1;
-    EditText inputVal1;
-    Button okButton;
 
-    ArrayAdapter<String> accountAdapter;
+    ArrayList<PostingInputLayout> inputPostings = new ArrayList<>();
+
     ArrayAdapter<String> payeeAdapter;
 
     Calendar c;
@@ -45,26 +46,20 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         topfId = bundle.getInt("topfId");
 
         this.setTitle(topfName);
-
+        inputLayout = (LinearLayout) findViewById(R.id.transactionInputLayout);
         inputDate = (EditText) findViewById(R.id.inputDate);
         inputPayee = (AutoCompleteTextView) findViewById(R.id.inputPayee);
-        inputAcc0 = (AutoCompleteTextView) findViewById(R.id.inputAcc0);
-        inputVal0 = (EditText) findViewById(R.id.inputVal0);
-        inputAcc1 = (AutoCompleteTextView) findViewById(R.id.inputAcc1);
-        inputVal1 = (EditText) findViewById(R.id.inputVal1);
+
+        // always add 2 Posting Input Lines
+        addPostingInputLine();
+        addPostingInputLine();
+
 
         // auto complete from string lists in strings.xml
-        String[] accounts = getResources().getStringArray(R.array.accountList);
-        accountAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,accounts);
         String[] payees = getResources().getStringArray(R.array.payeeList);
         payeeAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,payees);
-        inputAcc0.setAdapter(accountAdapter);
-        inputAcc0.setThreshold(1);
-        inputAcc1.setAdapter(accountAdapter);
-        inputAcc1.setThreshold(1);
         inputPayee.setAdapter(payeeAdapter);
         inputPayee.setThreshold(1);
-
 
         // set default date (today)
         c = Calendar.getInstance();
@@ -72,21 +67,19 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         inputDate.setText(dateFormater.format(c.getTime()), TextView.BufferType.EDITABLE);
         // setzen eines Datums: Date x = dateFormater.parse("2015/11/12")
 
-        okButton = (Button) findViewById(R.id.button);
-        okButton.setOnClickListener(this);
     }
 
 
-    @Override
-    public void onClick(View v) {
+    public void onOkClick(View v) {
         Transaction t = new Transaction();
 
         // write data to transaction
         t.date = inputDate.getText().toString();
         t.payee = inputPayee.getText().toString();
         t.currency = "€";
-        t.addPosting( inputAcc0.getText().toString(), parseAmount(inputVal0.getText().toString()) );
-        t.addPosting( inputAcc1.getText().toString(), parseAmount(inputVal1.getText().toString()) );
+        for (PostingInputLayout pil : inputPostings) {
+            t.addPosting( pil.getPosting() );
+        }
 
         //write transaction to database
         dataSource.open();
@@ -95,13 +88,21 @@ public class TransactionActivity extends AppCompatActivity implements View.OnCli
         finish();
     }
 
-    private static double parseAmount(String s) {
-        double res = 0.0;
-        try {
-            res = Double.parseDouble(s);
-        } catch (NullPointerException e) {
-        } catch (NumberFormatException e) {
+    public void onAddPostingClick(View v) {
+        if (inputPostings.size() < JournalDbHelper.MAX_POSTINGS) {
+            addPostingInputLine();
         }
-        return res;
+        else {
+            Toast toast = Toast.makeText(this, "Maximum number of Postings reached.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
+
+
+    protected void addPostingInputLine() {
+        PostingInputLayout pil = new PostingInputLayout(this);
+        inputPostings.add(pil);
+        inputLayout.addView(pil);
     }
 }

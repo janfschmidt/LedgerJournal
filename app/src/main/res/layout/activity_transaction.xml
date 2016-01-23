@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/transactionInput"
+        android:id="@+id/transactionInputLayout"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
@@ -32,87 +32,36 @@
             android:hint="Payee"
             android:id="@+id/inputPayee" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <AutoCompleteTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Your:Account"
-                android:id="@+id/inputAcc0"
-                android:layout_weight="3"
-                android:layout_gravity="left" />
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal|numberSigned"
-                android:ems="10"
-                android:id="@+id/inputVal0"
-                android:layout_weight="8"
-                android:layout_gravity="right"
-                android:gravity="right"
-                android:hint="0.00" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="€"
-                android:id="@+id/textCurr1"
-                android:layout_weight="10"
-                android:layout_gravity="center" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <AutoCompleteTextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Your:Other:Account"
-                android:id="@+id/inputAcc1"
-                android:layout_weight="3"
-                android:layout_gravity="left" />
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal|numberSigned"
-                android:ems="10"
-                android:id="@+id/inputVal1"
-                android:layout_weight="8"
-                android:layout_gravity="right"
-                android:gravity="right"
-                android:hint="0.00" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="€"
-                android:id="@+id/textCurr2"
-                android:layout_weight="10"
-                android:layout_gravity="center" />
-        </LinearLayout>
+        <!--here posting_input is added programmatically-->
 
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:layout_below="@id/transactionInput">
+        android:gravity="left"
+        android:layout_below="@id/transactionInputLayout">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:id="@+id/buttonAddPosting"
+            android:onClick="onAddPostingClick"
+            android:layout_alignParentLeft="true"
+            android:longClickable="false">
+        </Button>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ok"
             android:id="@+id/button"
-            android:layout_gravity="center_horizontal">
+            android:onClick="onOkClick"
+            android:layout_alignParentRight="true">
         </Button>
 
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>
