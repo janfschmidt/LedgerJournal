@@ -50,8 +50,11 @@ public class JournalDataSource {
 
         Transaction t = new Transaction(date,payee, currency);
         for (int i=0; i<JournalDbHelper.MAX_POSTINGS; i++) {
-            t.addPosting(getString(cursor, JournalDbHelper.columnAcc(i)), getDouble(cursor, JournalDbHelper.columnVal(i)));
-            Log.d("cursorToTransaction", "Posting " + i + ": " + t.posting(i).print());
+            String account = getString(cursor, JournalDbHelper.columnAcc(i));
+            if (account != null) {
+                t.addPosting(account, getDouble(cursor, JournalDbHelper.columnVal(i)));
+                Log.d("cursorToTransaction", "Posting " + i + ": " + t.posting(i).print());
+            }
         }
 
         return t;

@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ArrayAdapter topfArrayAdapter;
     ArrayList topfList = new ArrayList();
 
+    ToepfeDataSource dataSource;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,20 +39,27 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View view) {
                 addTopfDialog();
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
             }
         });
+
+        dataSource = new ToepfeDataSource(this);
+        dataSource.open();
 
         topfListView = (ListView) findViewById(R.id.topfListView);
         topfArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, topfList);
         topfListView.setAdapter(topfArrayAdapter);
 
-        topfList.add("Jan");
+      /*  topfList.add("Jan");
         topfList.add("Haushalt");
-        topfArrayAdapter.notifyDataSetChanged();
+        topfArrayAdapter.notifyDataSetChanged();*/
+        showAllToepfe();
 
         topfListView.setOnItemClickListener(this);
+    }
+
+    protected void onPause() {
+        super.onPause();
+        dataSource.close();
     }
 
 
@@ -80,8 +89,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Log.d("topf Click", position + ": " + topfList.get(position));
         Intent i = new Intent(MainActivity.this, JournalActivity.class);
-        i.putExtra("topfName", topfList.get(position).toString());
-        i.putExtra("topfId", position);
+        String topfname = topfList.get(position).toString();
+        i.putExtra("topfId", dataSource.getTopfId(topfname));
         startActivity(i);
     }
 
@@ -98,16 +107,26 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         // Make an "OK" button to save the Text to topfList
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                topfList.add(input.getText().toString());
+                String topfname = input.getText().toString();
+                dataSource.addTopf(topfname);
+                topfList.add(topfname);
                 topfArrayAdapter.notifyDataSetChanged();
             }
         });
 
         // Make a "Cancel" button that simply dismisses the alert
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {}
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
         });
 
         alert.show();
+    }
+
+    private void showAllToepfe() {
+        ArrayList<String> toepfe = dataSource.getAllToepfe();
+        topfList.clear();
+        topfList.addAll(toepfe);
+        topfArrayAdapter.notifyDataSetChanged();
     }
 }

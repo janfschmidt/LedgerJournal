@@ -62,6 +62,13 @@ class Posting {
         this(account, amount, "€");
     }
     public String print() {
-        return account + "\t" + amount + " " + currency;
+        return account + "\t" + value();
+    }
+
+    public String value() {
+        if (amount == 0.0)
+            return "";
+        else
+            return String.format("%.2f %s", amount, currency);
     }
 }

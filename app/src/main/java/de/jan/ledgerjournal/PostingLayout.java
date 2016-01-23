@@ -2,6 +2,7 @@ package de.jan.ledgerjournal;
 
 import android.content.Context;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -12,25 +13,36 @@ import android.widget.TextView;
  * posting consists of account and value (with commodity)
  */
 public class PostingLayout extends LinearLayout {
-    TextView account;
-    TextView value;
+    public TextView account;
+    public TextView value;
+    protected LinearLayout.LayoutParams accParams;
+    protected LinearLayout.LayoutParams valParams;
 
     PostingLayout(Context context) {
         super(context);
+        this.setOrientation(LinearLayout.HORIZONTAL);
 
         LayoutParams postingParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         this.setLayoutParams(postingParams);
 
         account = new TextView(context);
         value = new TextView(context);
-        LinearLayout.LayoutParams textParams = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+        accParams = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+        valParams = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
         int margin = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
-        textParams.setMargins(margin, 0, margin, 0);
-        textParams.weight = 1;
-        account.setLayoutParams(textParams);
-        textParams.weight = 0;
-        textParams.gravity = Gravity.RIGHT;
-        value.setLayoutParams(textParams);
+        accParams.setMargins(margin, 0, margin, 0);
+        accParams.weight = 1;
+        account.setLayoutParams(accParams);
+        valParams.weight = 0;
+        valParams.gravity = Gravity.RIGHT;
+        value.setLayoutParams(valParams);
+
+        this.addView(account);
+        this.addView(value);
+    }
+
+    public void addPosting(Posting posting) {
+
     }
 
     public void setAccount(String acc) {account.setText(acc);}
