@@ -3,9 +3,13 @@ package de.jan.ledgerjournal;
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -24,6 +28,8 @@ public class JournalActivity extends AppCompatActivity {
 
     JournalDataSource dataSource;
     ToepfeDataSource toepfeSource;
+
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,7 @@ public class JournalActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
     }
 
     protected void onStart() {
@@ -77,6 +84,41 @@ public class JournalActivity extends AppCompatActivity {
         toepfeSource.close();
         dataSource.close();
     }
+
+
+
+    // Share menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate menu resource file.
+        getMenuInflater().inflate(R.menu.menu_journal, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+
+        // Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+
+        // Set share intent
+        mShareActionProvider.setShareIntent(createShareIntent());
+        // Return true to display menu
+        return true;
+    }
+
+    private Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Halloho");
+        return shareIntent;
+    }
+
+    // Sets new share Intent.
+    // Use this method to change or set Share Intent in your Activity Lifecycle.
+    private void changeShareIntent(Intent shareIntent) {
+        mShareActionProvider.setShareIntent(shareIntent);
+    }
+
+
 
 
     private void showAllJournalTransactions() {

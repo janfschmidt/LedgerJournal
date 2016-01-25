@@ -70,6 +70,7 @@ public class TransactionActivity extends AppCompatActivity {
     }
 
 
+    // OK Button
     public void onOkClick(View v) {
         Transaction t = new Transaction();
 
@@ -88,6 +89,7 @@ public class TransactionActivity extends AppCompatActivity {
         finish();
     }
 
+    // + Button (add Posting input line)
     public void onAddPostingClick(View v) {
         if (inputPostings.size() < JournalDbHelper.MAX_POSTINGS) {
             addPostingInputLine();
