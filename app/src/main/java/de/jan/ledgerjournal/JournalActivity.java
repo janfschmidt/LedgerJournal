@@ -2,6 +2,7 @@ package de.jan.ledgerjournal;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,15 +18,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class JournalActivity extends AppCompatActivity {
 
+    Journal journal;
     ListView journalListView;
     TransactionsAdapter journalAdapter;
-    ArrayList<Transaction> journalList = new ArrayList<>();
-    int topfId;
 
+    int topfId;
     JournalDataSource dataSource;
     ToepfeDataSource toepfeSource;
 
@@ -37,6 +39,8 @@ public class JournalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_journal);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Up-Button
 
+
+        journal = new Journal();
         dataSource = new JournalDataSource(this);
         toepfeSource = new ToepfeDataSource(this);
         toepfeSource.open();
@@ -47,7 +51,7 @@ public class JournalActivity extends AppCompatActivity {
 
         //attaching TransactionsAdapter to journalList
         journalListView = (ListView) findViewById(R.id.journalListView);
-        journalAdapter = new TransactionsAdapter(this, journalList);
+        journalAdapter = new TransactionsAdapter(this, journal.list);
         journalListView.setAdapter(journalAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.journalFab);
@@ -108,7 +112,14 @@ public class JournalActivity extends AppCompatActivity {
     private Intent createShareIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "Halloho");
+
+        String filename = toepfeSource.getTopfName(topfId) + ".led";
+        journal.export(filename);
+
+        File journalFile = new File(getFilesDir(), filename);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(journalFile));
+        startActivity(Intent.createChooser(shareIntent, "Share Ledger file using")); //ich möchte keinen "Chooser" sobald ich JournalActivity öffne!
+
         return shareIntent;
     }
 
@@ -122,9 +133,7 @@ public class JournalActivity extends AppCompatActivity {
 
 
     private void showAllJournalTransactions() {
-        ArrayList<Transaction> transactions = dataSource.getAllTransactions(topfId);
-        journalList.clear();
-        journalList.addAll(transactions);
+        journal.set( dataSource.getAllTransactions(topfId) );
         journalAdapter.notifyDataSetChanged();
     }
 
