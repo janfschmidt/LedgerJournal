@@ -42,6 +42,15 @@ public class Transaction {
     public void deletePosting(int index) {
         postings.remove(index);
     }
+
+    public String print() {
+        String s = date + " * " + payee + "\n";
+        for (Posting p : postings) {
+            s += "\t" + p.print() + "\n";
+        }
+        s += "\n";
+        return s;
+    }
 }
 
 
@@ -62,7 +71,7 @@ class Posting {
         this(account, amount, "€");
     }
     public String print() {
-        return account + "\t" + value();
+        return String.format("%-40s %12s", account, value());
     }
 
     public String value() {

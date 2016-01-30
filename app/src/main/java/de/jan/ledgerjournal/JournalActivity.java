@@ -40,13 +40,16 @@ public class JournalActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Up-Button
 
 
-        journal = new Journal();
         dataSource = new JournalDataSource(this);
         toepfeSource = new ToepfeDataSource(this);
         toepfeSource.open();
 
         Bundle bundle = getIntent().getExtras();
         topfId = bundle.getInt("topfId");
+
+        String name = toepfeSource.getTopfName(topfId);
+        this.setTitle(name);
+        journal = new Journal(name);
 
 
         //attaching TransactionsAdapter to journalList
@@ -72,7 +75,6 @@ public class JournalActivity extends AppCompatActivity {
 
         toepfeSource.open();
         dataSource.open();
-        this.setTitle(toepfeSource.getTopfName(topfId));
 
         //populate list
         showAllJournalTransactions();
