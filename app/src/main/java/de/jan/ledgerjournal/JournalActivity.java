@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,12 +48,8 @@ public class JournalActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         topfId = bundle.getInt("topfId");
 
-        String name = toepfeSource.getTopfName(topfId);
-        this.setTitle(name);
-        journal = new Journal(name);
-
-
-        //attaching TransactionsAdapter to journalList
+        //attaching TransactionsAdapter to journal
+        journal = new Journal();
         journalListView = (ListView) findViewById(R.id.journalListView);
         journalAdapter = new TransactionsAdapter(this, journal.list);
         journalListView.setAdapter(journalAdapter);
@@ -75,6 +72,10 @@ public class JournalActivity extends AppCompatActivity {
 
         toepfeSource.open();
         dataSource.open();
+
+        String name = toepfeSource.getTopfName(topfId);
+        this.setTitle(name);
+        journal.setName(name);
 
         //populate list
         showAllJournalTransactions();
@@ -113,15 +114,14 @@ public class JournalActivity extends AppCompatActivity {
 
     private Intent createShareIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
+        shareIntent.setType("text/*");
 
-        String filename = toepfeSource.getTopfName(topfId) + ".led";
-        journal.export(filename);
+        saveToFile();
 
-        File journalFile = new File(getFilesDir(), filename);
+        File journalFile = new File(journal.exportFilePath());
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(journalFile));
-        startActivity(Intent.createChooser(shareIntent, "Share Ledger file using")); //ich möchte keinen "Chooser" sobald ich JournalActivity öffne!
-
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "LedgerJournal export");
+        //startActivity(Intent.createChooser(shareIntent, "Share Ledger file using")); //ich möchte keinen "Chooser" sobald ich JournalActivity öffne!
         return shareIntent;
     }
 
@@ -137,6 +137,12 @@ public class JournalActivity extends AppCompatActivity {
     private void showAllJournalTransactions() {
         journal.set( dataSource.getAllTransactions(topfId) );
         journalAdapter.notifyDataSetChanged();
+    }
+
+    private void saveToFile() {
+        journal.export();
+        Toast toast = Toast.makeText(this, "Wrote file "+journal.exportFilePath(), Toast.LENGTH_LONG);
+        toast.show();
     }
 
 }
