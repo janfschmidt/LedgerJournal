@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     ListView topfListView;
     ArrayAdapter topfArrayAdapter;
-    ArrayList topfList = new ArrayList();
+    ArrayList<String> topfList = new ArrayList<>();
 
     ToepfeDataSource dataSource;
 
@@ -49,12 +50,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         topfArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, topfList);
         topfListView.setAdapter(topfArrayAdapter);
 
-      /*  topfList.add("Jan");
-        topfList.add("Haushalt");
-        topfArrayAdapter.notifyDataSetChanged();*/
         showAllToepfe();
 
         topfListView.setOnItemClickListener(this);
+        registerForContextMenu(topfListView);
     }
 
     protected void onPause() {
@@ -89,16 +88,48 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Log.d("topf Click", position + ": " + topfList.get(position));
         Intent i = new Intent(MainActivity.this, JournalActivity.class);
-        String topfname = topfList.get(position).toString();
+        String topfname = topfList.get(position);
         i.putExtra("topfId", dataSource.getTopfId(topfname));
         startActivity(i);
+    }
+
+
+
+    // List item context menu
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (v.getId() == R.id.topfListView) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            menu.setHeaderTitle( topfList.get(info.position) );
+
+            menu.add("Rename Journal");
+            menu.add("Delete Journal");
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        if (item.getTitle()=="Rename Journal") {
+            Log.d("MainActivity", "Context menu: rename selected");
+        }
+        else if (item.getTitle()=="Delete Journal") {
+            Log.d("MainActivity", "Context menu: delete selected");
+            deleteDialog(info.position);
+        }
+        else {
+            return false;
+        }
+        return true;
     }
 
 
     protected void addTopfDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         //alert.setTitle("Hello!");
-        alert.setMessage("Add a new Topf:");
+        alert.setMessage("Add a new Journal:");
 
         // Create EditText for entry
         final EditText input = new EditText(this);
@@ -123,10 +154,42 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         alert.show();
     }
 
+    protected void deleteDialog(final int index) {
+        final String topfname = topfList.get(index);
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Really delete the Journal " + topfname + "?");
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                deleteTopf(index);
+            }
+        });
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+
+
+
     private void showAllToepfe() {
         ArrayList<String> toepfe = dataSource.getAllToepfe();
         topfList.clear();
         topfList.addAll(toepfe);
+        topfArrayAdapter.notifyDataSetChanged();
+    }
+
+    private void deleteTopf(int index) {
+        //delete transactions from journal db
+        int topfid = dataSource.getTopfId( topfList.get(index) );
+        JournalDataSource journalDb = new JournalDataSource(this);
+        journalDb.open();
+        journalDb.deleteTopf(topfid);
+        journalDb.close();
+
+        //delete topf from topf db
+        dataSource.deleteTopf(topfid);
+        topfList.remove(index);
         topfArrayAdapter.notifyDataSetChanged();
     }
 }

@@ -70,6 +70,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     // create array with database column names, used by JournalDataSource for Cursor
     public static String[] columns() {
         ArrayList<String> l = new ArrayList<String>();
+        l.add(COLUMN_ID);
         l.add(COLUMN_DATE);
         l.add(COLUMN_PAYEE);
         l.add(COLUMN_CURRENCY);

@@ -10,11 +10,13 @@ import android.os.Bundle;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -67,6 +69,8 @@ public class JournalActivity extends AppCompatActivity {
             }
         });
 
+        //context menu
+        registerForContextMenu(journalListView);
     }
 
     protected void onStart() {
@@ -122,6 +126,19 @@ public class JournalActivity extends AppCompatActivity {
         return true;
     }
 
+    private Intent createShareIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/*");
+
+        File journalFile = new File(journal.exportFilePath());
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(journalFile));
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "LedgerJournal export");
+        //startActivity(Intent.createChooser(shareIntent, "Share Ledger file using")); //ich möchte keinen "Chooser" sobald ich JournalActivity öffne!
+        return shareIntent;
+    }
+
+
+    //Other menu icons (export)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -134,28 +151,49 @@ public class JournalActivity extends AppCompatActivity {
         }
     }
 
-    private Intent createShareIntent() {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/*");
 
-        File journalFile = new File(journal.exportFilePath());
-        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(journalFile));
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "LedgerJournal export");
-        //startActivity(Intent.createChooser(shareIntent, "Share Ledger file using")); //ich möchte keinen "Chooser" sobald ich JournalActivity öffne!
-        return shareIntent;
+
+
+   // List item context menu
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (v.getId() == R.id.journalListView) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+            Transaction t = journal.get(info.position);
+            menu.setHeaderTitle(t.date + "\t" + t.payee);
+
+            menu.add("Edit Transaction");
+            menu.add("Delete Transaction");
+        }
     }
 
-    // Sets new share Intent.
-    // Use this method to change or set Share Intent in your Activity Lifecycle.
-    private void changeShareIntent(Intent shareIntent) {
-        mShareActionProvider.setShareIntent(shareIntent);
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        if (item.getTitle()=="Edit Transaction") {
+            Log.d("JournalActivity", "Context menu: edit selected");
+        }
+        else if (item.getTitle()=="Delete Transaction") {
+            Log.d("JournalActivity", "Context menu: delete selected");
+            deleteJournalTransaction(info.position);
+        }
+        else {
+            return false;
+        }
+        return true;
     }
-
-
 
 
     private void showAllJournalTransactions() {
         journal.set( dataSource.getAllTransactions(topfId) );
+        journalAdapter.notifyDataSetChanged();
+    }
+
+    private void deleteJournalTransaction(int position) {
+        dataSource.deleteTransaction( journal.get(position) );
+        journal.remove(position);
         journalAdapter.notifyDataSetChanged();
     }
 
@@ -188,7 +226,7 @@ class TransactionsAdapter extends ArrayAdapter<Transaction> {
 
             LinearLayout transactionLayout = (LinearLayout) view.findViewById(R.id.transactionLayout);
             //for each posting, PostingLayout is created
-            for (Posting p : t.postings) {
+            for (Posting p : t.getPostings()) {
                 PostingLayout pl = new PostingLayout(getContext());
                 pl.setAccount(p.account);
                 pl.setValue(p.value());

@@ -40,13 +40,17 @@ public class JournalDataSource {
         int index = cursor.getColumnIndex(columnname);
         return cursor.getDouble(index);
     }
-
+    private int getInt(Cursor cursor, String columnname) {
+        int index = cursor.getColumnIndex(columnname);
+        return cursor.getInt(index);
+    }
 
     // get Transaction from database cursor
     private Transaction cursorToTransaction(Cursor cursor) {
         String date = getString(cursor, JournalDbHelper.COLUMN_DATE);
         String payee = getString(cursor, JournalDbHelper.COLUMN_PAYEE);
         String currency = getString(cursor, JournalDbHelper.COLUMN_CURRENCY);
+        int id = getInt(cursor, JournalDbHelper.COLUMN_ID);
 
         Transaction t = new Transaction(date,payee, currency);
         for (int i=0; i<JournalDbHelper.MAX_POSTINGS; i++) {
@@ -56,6 +60,7 @@ public class JournalDataSource {
                 Log.d("cursorToTransaction", "Posting " + i + ": " + t.posting(i).print());
             }
         }
+        t.setDatabaseID(id);
 
         return t;
     }
@@ -91,5 +96,26 @@ public class JournalDataSource {
 
         long insertid = db.insert(JournalDbHelper.TABLE_JOURNAL, null, cv);
         Log.d("JournalDataSource", "db entry added with insert id " + insertid);
+    }
+
+    // delete a transaction
+    public void  deleteTransaction(Transaction t) {
+        int id = t.getDatabaseID();
+        int num = db.delete(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.COLUMN_ID + "=" + id, null);
+
+        if (num > 1)
+            throw new RuntimeException("deleteTransaction() deleted "+num+" Transactions, but 1 was expected.");
+        else if (num == 0)
+            throw new RuntimeException("deleteTransaction(): no Transaction with id "+id+" found.");
+    }
+
+    // delete a complete Journal/Topf by id
+    public void deleteTopf(int topfid) {
+        int num = db.delete(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.COLUMN_TOPFID + "=" + topfid, null);
+
+        if (num == 0)
+            throw new RuntimeException("deleteTopf(): no Transaction with topfid "+topfid+" found.");
+
+        Log.d("JournalDataSource", "deleted Journal with Topfid " + topfid + ", " + num + " Transactions deleted.");
     }
 }

@@ -26,6 +26,8 @@ public class Journal {
 
     public void add(Transaction t) {list.add(t);}
     public void add(ArrayList<Transaction> tl) {list.addAll(tl);}
+    public void remove(int index) {list.remove(index);}
+    public Transaction get(int index) {return list.get(index);}
 
     public void set(ArrayList<Transaction> tl) {list.clear(); add(tl);}
 

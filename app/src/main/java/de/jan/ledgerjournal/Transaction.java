@@ -8,12 +8,14 @@ public class Transaction {
     public String date;
     public String payee;
     public String currency;
-    protected ArrayList<Posting> postings = new ArrayList<Posting>();
+    private ArrayList<Posting> postings = new ArrayList<Posting>();
+    private int databaseID; // id to identify Transaction in Journal database
 
     public Transaction(String date, String payee, String currency){
         this.date = date;
         this.payee = payee;
         this.currency = currency;
+        this.databaseID = -1;
     }
 
     public Transaction(String date, String payee, Posting[] postings, String currency){
@@ -27,6 +29,7 @@ public class Transaction {
     }
 
     public Posting posting(int index) {return postings.get(index);}
+    public ArrayList<Posting> getPostings() {return postings;}
     public int numPostings() {return postings.size();}
 
     public void addPosting(Posting p){
@@ -36,11 +39,19 @@ public class Transaction {
             postings.add(p);
     }
     public void addPosting(String account, double amount){
-        this.addPosting(new Posting(account, amount,this.currency));
+        this.addPosting(new Posting(account, amount, this.currency));
     }
 
     public void deletePosting(int index) {
         postings.remove(index);
+    }
+
+    protected void setDatabaseID(int id) {databaseID = id;}
+    public int getDatabaseID() {
+        if (databaseID == -1)
+            throw new RuntimeException("Transaction DatabaseID was not set!");
+        else
+            return databaseID;
     }
 
     public String print() {

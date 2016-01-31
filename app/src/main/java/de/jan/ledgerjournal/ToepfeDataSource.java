@@ -81,4 +81,14 @@ public class ToepfeDataSource {
         long insertid = db.insert(ToepfeDbHelper.TABLE_TOEPFE, null, cv);
         Log.d("ToepfeDataSource", "db entry added with insert id " + insertid);
     }
+
+    // delete a topf from the database
+    public void  deleteTopf(int topfid) {
+        int num = db.delete(ToepfeDbHelper.TABLE_TOEPFE, ToepfeDbHelper.COLUMN_TOPFID + "=" + topfid, null);
+
+        if (num > 1)
+            throw new RuntimeException("deleteTopf() deleted "+num+" Journals, but 1 was expected.");
+        else if (num == 0)
+            throw new RuntimeException("deleteTopf(): no Journal with id "+topfid+" found.");
+    }
 }
