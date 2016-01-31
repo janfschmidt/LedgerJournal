@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.jan.ledgerjournal.JournalActivity">
     <item
+        android:id="@+id/menu_item_export"
+        app:showAsAction="ifRoom"
+        android:title="Save"
+        android:icon="@android:drawable/stat_sys_download" />
+    <item
         android:id="@+id/menu_item_share"
         app:showAsAction="ifRoom"
         android:title="Share"

@@ -8,6 +8,8 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -105,18 +107,36 @@ public class JournalActivity extends AppCompatActivity {
 
         // Fetch and store ShareActionProvider
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        mShareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
+            @Override
+            public boolean onShareTargetSelected(ShareActionProvider actionProvider, Intent intent) {
+                saveToFile();
+                return false;
+            }
+        });
 
         // Set share intent
         mShareActionProvider.setShareIntent(createShareIntent());
+
         // Return true to display menu
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // menu_item_share not called, because it is handled by ShareActionProvider
+            case R.id.menu_item_export:
+                saveToFile();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private Intent createShareIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/*");
-
-        saveToFile();
 
         File journalFile = new File(journal.exportFilePath());
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(journalFile));
