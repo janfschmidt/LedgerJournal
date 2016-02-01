@@ -19,11 +19,12 @@ import java.util.Calendar;
 public class TransactionActivity extends AppCompatActivity {
     String topfName;
     int topfId;
+    Transaction editme;
+    boolean editMode;
 
     LinearLayout inputLayout;
     EditText inputDate;
     AutoCompleteTextView inputPayee;
-
     ArrayList<PostingInputLayout> inputPostings = new ArrayList<>();
 
     ArrayAdapter<String> payeeAdapter;
@@ -61,12 +62,20 @@ public class TransactionActivity extends AppCompatActivity {
         inputPayee.setAdapter(payeeAdapter);
         inputPayee.setThreshold(1);
 
-        // set default date (today)
-        c = Calendar.getInstance();
-        dateFormater = new SimpleDateFormat("yyyy/MM/dd");
-        inputDate.setText(dateFormater.format(c.getTime()), TextView.BufferType.EDITABLE);
-        // setzen eines Datums: Date x = dateFormater.parse("2015/11/12")
 
+        // fill form with given Transaction (edit Transaction)
+        if (bundle.containsKey("transaction")) {
+            editme = bundle.getParcelable("transaction");
+            insertTransaction(editme);
+            editMode = true;
+        }
+        // set default date (today) for new Transaction
+        else {
+            c = Calendar.getInstance();
+            dateFormater = new SimpleDateFormat("yyyy/MM/dd");
+            inputDate.setText(dateFormater.format(c.getTime()), TextView.BufferType.EDITABLE);
+            editMode = false;
+        }
     }
 
 
@@ -84,7 +93,14 @@ public class TransactionActivity extends AppCompatActivity {
 
         //write transaction to database
         dataSource.open();
-        dataSource.addTransaction(t, topfId);
+        if (editMode) {
+            t.setDatabaseID(editme.getDatabaseID());
+            dataSource.editTransaction(t);
+        }
+        else {
+            dataSource.addTransaction(t, topfId);
+        }
+
         dataSource.close();
         finish();
     }
@@ -106,5 +122,17 @@ public class TransactionActivity extends AppCompatActivity {
         PostingInputLayout pil = new PostingInputLayout(this);
         inputPostings.add(pil);
         inputLayout.addView(pil);
+    }
+
+    protected void insertTransaction(Transaction t) {
+        inputDate.setText(t.date);
+        inputPayee.setText(t.payee);
+
+        while (t.numPostings() > inputPostings.size()) {
+            addPostingInputLine();
+        }
+        for (int i=0; i<t.numPostings(); i++) {
+            inputPostings.get(i).setPosting(t.posting(i));
+        }
     }
 }

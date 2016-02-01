@@ -19,6 +19,10 @@ public class Journal {
     public ArrayList<Transaction> list = new ArrayList<>();
     protected String name;
 
+    Calendar c = Calendar.getInstance();
+    SimpleDateFormat dateComment = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    SimpleDateFormat dateFilename = new SimpleDateFormat("yyyyMMdd-HHmmss");
+
     public Journal() {setName("unknown");}
     public Journal(String name) {setName(name);}
 
@@ -32,7 +36,7 @@ public class Journal {
     public void set(ArrayList<Transaction> tl) {list.clear(); add(tl);}
 
     public String exportDir() {return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/LedgerJournal";}
-    public String exportFilename() {return name + ".led";}
+    public String exportFilename() {return name + "_" + dateFilename.format(c.getTime()) + ".led";}
     public String exportFilePath() {return exportDir() + "/" + exportFilename();}
 
 
@@ -47,9 +51,7 @@ public class Journal {
             try {
                 FileWriter writer = new FileWriter( new File(dir, exportFilename()) );
 
-                Calendar c = Calendar.getInstance();
-                SimpleDateFormat dateFormater = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-                writer.append("# LedgerJournal export at " + dateFormater.format(c.getTime()) + "\n");
+                writer.append("# LedgerJournal export at " + dateComment.format(c.getTime()) + "\n");
 
                 for (Transaction t : list) {
                     writer.append(t.print());

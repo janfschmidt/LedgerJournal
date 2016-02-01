@@ -79,6 +79,11 @@ public class PostingInputLayout extends LinearLayout {
         return p;
     }
 
+    public void setPosting(Posting p) {
+        account.setText(p.account);
+        amount.setText(String.valueOf(p.amount));
+    }
+
     private static double parseAmount(String s) {
         double res = 0.0;
         try {

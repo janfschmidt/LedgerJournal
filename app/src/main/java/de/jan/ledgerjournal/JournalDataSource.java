@@ -98,6 +98,20 @@ public class JournalDataSource {
         Log.d("JournalDataSource", "db entry added with insert id " + insertid);
     }
 
+    // edit a transaction (update)
+    public void editTransaction(Transaction t){
+        ContentValues cv = new ContentValues();
+        cv.put(JournalDbHelper.COLUMN_DATE, t.date);
+        cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
+        cv.put(JournalDbHelper.COLUMN_CURRENCY, t.currency);
+        for (int i=0; i<t.numPostings(); i++) {
+            cv.put(JournalDbHelper.columnAcc(i), t.posting(i).account);
+            cv.put(JournalDbHelper.columnVal(i), t.posting(i).amount);
+        }
+        db.update(JournalDbHelper.TABLE_JOURNAL, cv, JournalDbHelper.COLUMN_ID + "=" + t.getDatabaseID(), null);
+        Log.d("JournalDataSource", "updated db entry with id " + t.getDatabaseID());
+    }
+
     // delete a transaction
     public void  deleteTransaction(Transaction t) {
         int id = t.getDatabaseID();

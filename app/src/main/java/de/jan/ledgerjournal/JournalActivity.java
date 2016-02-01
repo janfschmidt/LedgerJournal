@@ -62,7 +62,6 @@ public class JournalActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //addTransaction();
                 Intent i = new Intent(JournalActivity.this, TransactionActivity.class);
                 i.putExtra("topfId", topfId);
                 startActivity(i);
@@ -174,6 +173,7 @@ public class JournalActivity extends AppCompatActivity {
 
         if (item.getTitle()=="Edit Transaction") {
             Log.d("JournalActivity", "Context menu: edit selected");
+            editJournalTransaction(info.position);
         }
         else if (item.getTitle()=="Delete Transaction") {
             Log.d("JournalActivity", "Context menu: delete selected");
@@ -195,6 +195,13 @@ public class JournalActivity extends AppCompatActivity {
         dataSource.deleteTransaction( journal.get(position) );
         journal.remove(position);
         journalAdapter.notifyDataSetChanged();
+    }
+
+    private void editJournalTransaction(int position) {
+        Intent i = new Intent(JournalActivity.this, TransactionActivity.class);
+        i.putExtra("topfId", topfId);
+        i.putExtra("transaction", journal.get(position));
+        startActivity(i);
     }
 
     private void saveToFile() {

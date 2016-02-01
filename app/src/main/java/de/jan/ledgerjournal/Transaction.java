@@ -1,10 +1,12 @@
 package de.jan.ledgerjournal;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
 
-public class Transaction {
+public class Transaction implements Parcelable {
     public String date;
     public String payee;
     public String currency;
@@ -25,7 +27,16 @@ public class Transaction {
     }
 
     public Transaction() {
-        this("2016/01/01", "Mr X", "€");
+        this("", "", "€");
+    }
+
+    //construct from Parcel
+    public Transaction(Parcel in) {
+        this.date = in.readString();
+        this.payee = in.readString();
+        this.currency = in.readString();
+        in.readTypedList(postings, Posting.CREATOR);
+        this.databaseID = in.readInt();
     }
 
     public Posting posting(int index) {return postings.get(index);}
@@ -62,10 +73,40 @@ public class Transaction {
         s += "\n";
         return s;
     }
+
+
+    // functions for Parcelable - used to send a Transaction between Activities via Intent.putExtra()
+    @Override
+    public int describeContents(){
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags){
+        out.writeString(date);
+        out.writeString(payee);
+        out.writeString(currency);
+        out.writeTypedList(postings);
+        out.writeInt(databaseID);
+    }
+
+    public static final Parcelable.Creator<Transaction> CREATOR =
+            new Parcelable.Creator<Transaction>(){
+                @Override
+                public Transaction createFromParcel(Parcel source) {
+                    return new Transaction(source);
+                }
+                @Override
+                public Transaction[] newArray(int size) {
+                    return new Transaction[size];
+                }
+            };
 }
 
 
-class Posting {
+
+
+class Posting implements Parcelable {
     public String account;
     public double amount;
     public String currency;
@@ -81,6 +122,13 @@ class Posting {
     public Posting(String account, double amount) {
         this(account, amount, "€");
     }
+    public Posting(Parcel in) {
+        this.account = in.readString();
+        this.amount = in.readDouble();
+        this.currency = in.readString();
+    }
+
+
     public String print() {
         return String.format("%-40s %12s", account, value());
     }
@@ -91,4 +139,31 @@ class Posting {
         else
             return String.format("%.2f %s", amount, currency);
     }
+
+
+    // functions for Parcelable - used to send a Transaction between Activities via Intent.putExtra()
+    @Override
+    public int describeContents(){
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags){
+        out.writeString(account);
+        out.writeDouble(amount);
+        out.writeString(currency);
+    }
+
+    public static final Parcelable.Creator<Posting> CREATOR =
+            new Parcelable.Creator<Posting>(){
+                @Override
+                public Posting createFromParcel(Parcel source) {
+                    return new Posting(source);
+                }
+                @Override
+                public Posting[] newArray(int size) {
+                    return new Posting[size];
+                }
+            };
+
 }
