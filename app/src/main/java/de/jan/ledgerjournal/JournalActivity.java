@@ -72,9 +72,8 @@ public class JournalActivity extends AppCompatActivity {
         registerForContextMenu(journalListView);
     }
 
-    protected void onStart() {
-        super.onStart();
-
+    protected void onResume() {
+        super.onResume();
         toepfeSource.open();
         dataSource.open();
 
@@ -82,12 +81,6 @@ public class JournalActivity extends AppCompatActivity {
         this.setTitle(name);
         journal.setName(name);
 
-        //populate list
-        showAllJournalTransactions();
-    }
-
-    protected void onResume() {
-        super.onResume();
         showAllJournalTransactions();
     }
 

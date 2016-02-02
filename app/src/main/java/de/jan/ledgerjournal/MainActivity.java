@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ArrayAdapter topfArrayAdapter;
     ArrayList<String> topfList = new ArrayList<>();
 
-    ToepfeDataSource dataSource;
+    ToepfeDataSource toepfeSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,22 +42,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
-        dataSource = new ToepfeDataSource(this);
-        dataSource.open();
+        toepfeSource = new ToepfeDataSource(this);
 
         topfListView = (ListView) findViewById(R.id.topfListView);
         topfArrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, topfList);
         topfListView.setAdapter(topfArrayAdapter);
 
-        showAllToepfe();
-
         topfListView.setOnItemClickListener(this);
         registerForContextMenu(topfListView);
     }
 
-    protected void onPause() {
-        super.onPause();
-        dataSource.close();
+    protected void onResume() {
+        super.onResume();
+        toepfeSource.open();
+        showAllToepfe();
+    }
+
+    protected void onStop() {
+        super.onStop();
+        toepfeSource.close();
     }
 
 
@@ -89,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Log.d("topf Click", position + ": " + topfList.get(position));
         Intent i = new Intent(MainActivity.this, JournalActivity.class);
         String topfname = topfList.get(position);
-        i.putExtra("topfId", dataSource.getTopfId(topfname));
+        i.putExtra("topfId", toepfeSource.getTopfId(topfname));
         startActivity(i);
     }
 
@@ -114,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         if (item.getTitle()=="Rename Journal") {
             Log.d("MainActivity", "Context menu: rename selected");
+            editTopfDialog(info.position);
         }
         else if (item.getTitle()=="Delete Journal") {
             Log.d("MainActivity", "Context menu: delete selected");
@@ -130,8 +133,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         //alert.setTitle("Hello!");
         alert.setMessage("Add a new Journal:");
-
-        // Create EditText for entry
         final EditText input = new EditText(this);
         alert.setView(input);
 
@@ -139,9 +140,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String topfname = input.getText().toString();
-                dataSource.addTopf(topfname);
+                toepfeSource.addTopf(topfname);
                 topfList.add(topfname);
                 topfArrayAdapter.notifyDataSetChanged();
+            }
+        });
+
+        // Make a "Cancel" button that simply dismisses the alert
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+
+        alert.show();
+    }
+
+    protected void editTopfDialog(int index) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final String oldName =  topfList.get(index);
+        alert.setTitle("Rename "+ oldName);
+        final EditText input = new EditText(this);
+        alert.setView(input);
+
+        // Make an "OK" button to save the Text to topfList
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                String newName = input.getText().toString();
+                toepfeSource.editTopf(oldName, newName);
+                showAllToepfe();
             }
         });
 
@@ -173,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
     private void showAllToepfe() {
-        ArrayList<String> toepfe = dataSource.getAllToepfe();
+        ArrayList<String> toepfe = toepfeSource.getAllToepfe();
         topfList.clear();
         topfList.addAll(toepfe);
         topfArrayAdapter.notifyDataSetChanged();
@@ -181,14 +207,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void deleteTopf(int index) {
         //delete transactions from journal db
-        int topfid = dataSource.getTopfId( topfList.get(index) );
+        int topfid = toepfeSource.getTopfId( topfList.get(index) );
         JournalDataSource journalDb = new JournalDataSource(this);
         journalDb.open();
         journalDb.deleteTopf(topfid);
         journalDb.close();
 
         //delete topf from topf db
-        dataSource.deleteTopf(topfid);
+        toepfeSource.deleteTopf(topfid);
         topfList.remove(index);
         topfArrayAdapter.notifyDataSetChanged();
     }

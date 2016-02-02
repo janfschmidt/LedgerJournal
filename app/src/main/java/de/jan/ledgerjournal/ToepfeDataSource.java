@@ -82,6 +82,15 @@ public class ToepfeDataSource {
         Log.d("ToepfeDataSource", "db entry added with insert id " + insertid);
     }
 
+    public void editTopf(String oldTopfname, String newTopfname) {
+        ContentValues cv = new ContentValues();
+        cv.put(ToepfeDbHelper.COLUMN_TOPFNAME, newTopfname);
+
+        int id = getTopfId(oldTopfname);
+        db.update(ToepfeDbHelper.TABLE_TOEPFE, cv, ToepfeDbHelper.COLUMN_TOPFID + "=" + id, null);
+        Log.d("ToepfeDataSource", "updated db entry " + oldTopfname + " -> " + newTopfname);
+    }
+
     // delete a topf from the database
     public void  deleteTopf(int topfid) {
         int num = db.delete(ToepfeDbHelper.TABLE_TOEPFE, ToepfeDbHelper.COLUMN_TOPFID + "=" + topfid, null);
