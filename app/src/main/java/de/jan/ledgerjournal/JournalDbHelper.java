@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -123,7 +124,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     }
 
     public static String[] columns_TOEPFE() {
-        ArrayList<String> l = new ArrayList<String>();
+        ArrayList<String> l = new ArrayList<>();
         l.add(COLUMN_TOPFNAME);
         l.add(COLUMN_TOPFID);
         String[] a = new String[l.size()];
@@ -132,9 +133,19 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     }
 
     public static String[] columns_TEMPLATES() {
-        ArrayList<String> l = new ArrayList<String>();
+        ArrayList<String> l = new ArrayList<>();
         l.add(COLUMN_ID);
         l.add(COLUMN_PAYEE);
+        for (int i=0; i<MAX_POSTINGS; i++) {
+            l.add(columnAcc(i));
+        }
+        String[] a = new String[l.size()];
+        a = l.toArray(a);
+        return a;
+    }
+
+    public static String[] columns_accounts() {
+        ArrayList<String> l = new ArrayList<>();
         for (int i=0; i<MAX_POSTINGS; i++) {
             l.add(columnAcc(i));
         }

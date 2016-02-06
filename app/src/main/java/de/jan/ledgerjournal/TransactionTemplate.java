@@ -17,11 +17,13 @@ public class TransactionTemplate {
 
     public TransactionTemplate(String payee, String account1, String account2) {
         this.payee = payee;
-        accounts.add(account1);
-        accounts.add(account2);
+        if (account1 != "")
+            accounts.add(account1);
+        if (account2 != "")
+            accounts.add(account2);
         databaseID = -1;
     }
-    public TransactionTemplate(String payee) {this(payee, "accout1", "account2");}
+    public TransactionTemplate(String payee) {this(payee, "", "");}
 
 
     public ArrayList<String> getAccounts() {return accounts;}

@@ -65,16 +65,16 @@ public class JournalDataSource extends MyDataSource {
     // ====================== Transactions =====================
     // get Transaction from database cursor
     private Transaction cursorToTransaction(Cursor cursor) {
-        String date = getString(cursor, dbHelper.COLUMN_DATE);
-        String payee = getString(cursor, dbHelper.COLUMN_PAYEE);
-        String currency = getString(cursor, dbHelper.COLUMN_CURRENCY);
-        int id = getInt(cursor, dbHelper.COLUMN_ID);
+        String date = getString(cursor, JournalDbHelper.COLUMN_DATE);
+        String payee = getString(cursor, JournalDbHelper.COLUMN_PAYEE);
+        String currency = getString(cursor, JournalDbHelper.COLUMN_CURRENCY);
+        int id = getInt(cursor, JournalDbHelper.COLUMN_ID);
 
         Transaction t = new Transaction(date,payee, currency);
-        for (int i=0; i<dbHelper.MAX_POSTINGS; i++) {
-            String account = getString(cursor, dbHelper.columnAcc(i));
+        for (int i=0; i<JournalDbHelper.MAX_POSTINGS; i++) {
+            String account = getString(cursor, JournalDbHelper.columnAcc(i));
             if (account != null) {
-                t.addPosting(account, getDouble(cursor, dbHelper.columnVal(i)));
+                t.addPosting(account, getDouble(cursor, JournalDbHelper.columnVal(i)));
                 Log.d(logTag, "Posting " + i + ": " + t.posting(i).print());
             }
         }
@@ -86,7 +86,7 @@ public class JournalDataSource extends MyDataSource {
     // get list of all Transactions from given Topf - e.g. to populate ListView
     public ArrayList<Transaction> getAllTransactions(int topfid) {
         ArrayList<Transaction> list = new ArrayList<>();
-        Cursor cursor = db.query(dbHelper.TABLE_JOURNAL, dbHelper.columns_JOURNAL(), dbHelper.getTopfFilter(topfid), null, null, null, null);
+        Cursor cursor = db.query(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.columns_JOURNAL(), JournalDbHelper.getTopfFilter(topfid), null, null, null, null);
         Log.d(logTag, cursor.getCount() + " db-Einträge fuer Topfid " + topfid + " gelesen.");
 
         cursor.moveToFirst();
@@ -102,37 +102,37 @@ public class JournalDataSource extends MyDataSource {
     // add a transaction to a topf in the database
     public void addTransaction(Transaction t, int topfid) {
         ContentValues cv = new ContentValues();
-        cv.put(dbHelper.COLUMN_TOPFID, topfid);
-        cv.put(dbHelper.COLUMN_DATE, t.date);
-        cv.put(dbHelper.COLUMN_PAYEE, t.payee);
-        cv.put(dbHelper.COLUMN_CURRENCY, t.currency);
+        cv.put(JournalDbHelper.COLUMN_TOPFID, topfid);
+        cv.put(JournalDbHelper.COLUMN_DATE, t.date);
+        cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
+        cv.put(JournalDbHelper.COLUMN_CURRENCY, t.currency);
         for (int i=0; i<t.numPostings(); i++) {
-            cv.put(dbHelper.columnAcc(i), t.posting(i).account);
-            cv.put(dbHelper.columnVal(i), t.posting(i).amount);
+            cv.put(JournalDbHelper.columnAcc(i), t.posting(i).account);
+            cv.put(JournalDbHelper.columnVal(i), t.posting(i).amount);
         }
 
-        long insertid = db.insert(dbHelper.TABLE_JOURNAL, null, cv);
+        long insertid = db.insert(JournalDbHelper.TABLE_JOURNAL, null, cv);
         Log.d(logTag, "db entry added with insert id " + insertid);
     }
 
     // edit a transaction (update)
     public void editTransaction(Transaction t){
         ContentValues cv = new ContentValues();
-        cv.put(dbHelper.COLUMN_DATE, t.date);
-        cv.put(dbHelper.COLUMN_PAYEE, t.payee);
-        cv.put(dbHelper.COLUMN_CURRENCY, t.currency);
+        cv.put(JournalDbHelper.COLUMN_DATE, t.date);
+        cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
+        cv.put(JournalDbHelper.COLUMN_CURRENCY, t.currency);
         for (int i=0; i<t.numPostings(); i++) {
-            cv.put(dbHelper.columnAcc(i), t.posting(i).account);
-            cv.put(dbHelper.columnVal(i), t.posting(i).amount);
+            cv.put(JournalDbHelper.columnAcc(i), t.posting(i).account);
+            cv.put(JournalDbHelper.columnVal(i), t.posting(i).amount);
         }
-        db.update(dbHelper.TABLE_JOURNAL, cv, dbHelper.COLUMN_ID + "=" + t.getDatabaseID(), null);
+        db.update(JournalDbHelper.TABLE_JOURNAL, cv, JournalDbHelper.COLUMN_ID + "=" + t.getDatabaseID(), null);
         Log.d(logTag, "updated db entry with id " + t.getDatabaseID());
     }
 
     // delete a transaction
     public void  deleteTransaction(Transaction t) {
         int id = t.getDatabaseID();
-        int num = db.delete(dbHelper.TABLE_JOURNAL, dbHelper.COLUMN_ID + "=" + id, null);
+        int num = db.delete(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.COLUMN_ID + "=" + id, null);
 
         if (num > 1)
             throw new RuntimeException("deleteTransaction() deleted "+num+" Transactions, but 1 was expected.");
@@ -142,8 +142,8 @@ public class JournalDataSource extends MyDataSource {
 
     // delete a complete Journal/Topf by id
     public void deleteTopf(int topfid) {
-        int num = db.delete(dbHelper.TABLE_JOURNAL, dbHelper.COLUMN_TOPFID + "=" + topfid, null);
-        db.delete(dbHelper.TABLE_TOEPFE, dbHelper.COLUMN_TOPFID + "=" + topfid, null);
+        int num = db.delete(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.COLUMN_TOPFID + "=" + topfid, null);
+        db.delete(JournalDbHelper.TABLE_TOEPFE, JournalDbHelper.COLUMN_TOPFID + "=" + topfid, null);
 
         if (num == 0)
             throw new RuntimeException("deleteTopf(): no Transaction with topfid "+topfid+" found.");
@@ -156,28 +156,32 @@ public class JournalDataSource extends MyDataSource {
 
     // ====================== Toepfe =====================
     public int getTopfId(String topfname) {
-        Cursor cursor = db.query(dbHelper.TABLE_TOEPFE, dbHelper.columns_TOEPFE(), dbHelper.COLUMN_TOPFNAME + "='" + topfname + "'", null, null, null, null);
+        Cursor cursor = db.query(JournalDbHelper.TABLE_TOEPFE, JournalDbHelper.columns_TOEPFE(), JournalDbHelper.COLUMN_TOPFNAME + "='" + topfname + "'", null, null, null, null);
         Log.d(logTag, cursor.getCount() + " db-Eintrag mit topfname " + topfname + " gelesen.");
         cursor.moveToFirst(); // topfname is unique, so there can be only one entry
-        return getInt(cursor, dbHelper.COLUMN_TOPFID);
+        int id = getInt(cursor, JournalDbHelper.COLUMN_TOPFID);
+        cursor.close();
+        return id;
     }
 
     public String getTopfName(int topfid) {
-        Cursor cursor = db.query(dbHelper.TABLE_TOEPFE, dbHelper.columns_TOEPFE(), dbHelper.COLUMN_TOPFID + "=" + topfid, null, null, null, null);
+        Cursor cursor = db.query(JournalDbHelper.TABLE_TOEPFE, JournalDbHelper.columns_TOEPFE(), JournalDbHelper.COLUMN_TOPFID + "=" + topfid, null, null, null, null);
         Log.d(logTag, cursor.getCount() + " db-Eintrag mit topfid " + topfid + " gelesen.");
         cursor.moveToFirst(); // topfid is unique, so there can be only one entry
-        return getString(cursor, dbHelper.COLUMN_TOPFNAME);
+        String name = getString(cursor, JournalDbHelper.COLUMN_TOPFNAME);
+        cursor.close();
+        return name;
     }
 
     // get list of all Toepfe - e.g. to populate ListView
     public ArrayList<String> getAllToepfe() {
         ArrayList<String> list = new ArrayList<>();
-        Cursor cursor = db.query(dbHelper.TABLE_TOEPFE, dbHelper.columns_TOEPFE(), null, null, null, null, null);
+        Cursor cursor = db.query(JournalDbHelper.TABLE_TOEPFE, JournalDbHelper.columns_TOEPFE(), null, null, null, null, null);
         Log.d(logTag, cursor.getCount() + " db-Einträge gelesen.");
 
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
-            String t = getString(cursor, dbHelper.COLUMN_TOPFNAME);
+            String t = getString(cursor, JournalDbHelper.COLUMN_TOPFNAME);
             list.add(t);
             cursor.moveToNext();
         }
@@ -188,18 +192,18 @@ public class JournalDataSource extends MyDataSource {
     // add a topf in the database
     public void addTopf(String topfname) {
         ContentValues cv = new ContentValues();
-        cv.put(dbHelper.COLUMN_TOPFNAME, topfname);
+        cv.put(JournalDbHelper.COLUMN_TOPFNAME, topfname);
 
-        long insertid = db.insert(dbHelper.TABLE_TOEPFE, null, cv);
+        long insertid = db.insert(JournalDbHelper.TABLE_TOEPFE, null, cv);
         Log.d(logTag, "db entry added with insert id " + insertid);
     }
 
     public void editTopf(String oldTopfname, String newTopfname) {
         ContentValues cv = new ContentValues();
-        cv.put(dbHelper.COLUMN_TOPFNAME, newTopfname);
+        cv.put(JournalDbHelper.COLUMN_TOPFNAME, newTopfname);
 
         int id = getTopfId(oldTopfname);
-        db.update(dbHelper.TABLE_TOEPFE, cv, dbHelper.COLUMN_TOPFID + "=" + id, null);
+        db.update(JournalDbHelper.TABLE_TOEPFE, cv, JournalDbHelper.COLUMN_TOPFID + "=" + id, null);
         Log.d(logTag, "updated db entry " + oldTopfname + " -> " + newTopfname);
     }
 
@@ -209,12 +213,12 @@ public class JournalDataSource extends MyDataSource {
     // ====================== Transaction Templates =====================
     // get template from database cursor
     public TransactionTemplate cursorToTemplate(Cursor cursor) {
-        String payee = getString(cursor, dbHelper.COLUMN_PAYEE);
-        int id = getInt(cursor, dbHelper.COLUMN_ID);
+        String payee = getString(cursor, JournalDbHelper.COLUMN_PAYEE);
+        int id = getInt(cursor, JournalDbHelper.COLUMN_ID);
 
         TransactionTemplate t = new TransactionTemplate(payee);
-        for (int i=0; i<dbHelper.MAX_POSTINGS; i++) {
-            String account = getString(cursor, dbHelper.columnAcc(i));
+        for (int i=0; i<JournalDbHelper.MAX_POSTINGS; i++) {
+            String account = getString(cursor, JournalDbHelper.columnAcc(i));
             if (account != null) {
                 t.addAccount(account);
             }
@@ -227,7 +231,7 @@ public class JournalDataSource extends MyDataSource {
     // get list of all Templates - e.g. to populate ListView
     public ArrayList<TransactionTemplate> getAllTemplates() {
         ArrayList<TransactionTemplate> list = new ArrayList<>();
-        Cursor cursor = db.query(dbHelper.TABLE_TEMPLATES, dbHelper.columns_TEMPLATES(), null, null, null, null, null);
+        Cursor cursor = db.query(JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.columns_TEMPLATES(), null, null, null, null, null);
         Log.d(logTag, cursor.getCount() + " db-Einträge gelesen.");
 
         cursor.moveToFirst();
@@ -240,6 +244,14 @@ public class JournalDataSource extends MyDataSource {
         return list;
     }
 
+    public TransactionTemplate getTemplate(String payee) {
+        Cursor cursor = db.query(JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.columns_TEMPLATES(), JournalDbHelper.COLUMN_PAYEE + "=" + payee, null, null, null, null);
+        cursor.moveToFirst();
+        TransactionTemplate t = cursorToTemplate(cursor);
+        cursor.close();
+        return t;
+    }
+
     // get list of all template payees
     public String[] getAllTemplatePayees() {
         ArrayList<TransactionTemplate> list = getAllTemplates();
@@ -248,18 +260,33 @@ public class JournalDataSource extends MyDataSource {
             payees.add(t.payee);
         }
         String[] s = new String[payees.size()];
-        payees.toArray(s);
+        s = payees.toArray(s);
+        return s;
+    }
+
+    public String[] getAllTemplateAccounts() {
+        Cursor cursor = db.query(true, JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.columns_TEMPLATES(),  null, null, null, null, null, null);
+        ArrayList<String> list = new ArrayList<>();
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            TransactionTemplate t = cursorToTemplate(cursor);
+            list.addAll(t.getAccounts());
+            cursor.moveToNext();
+        }
+        cursor.close();
+        String[] s = new String[list.size()];
+        s = list.toArray(s);
         return s;
     }
 
     // add a template to the database
     public void addTemplate(TransactionTemplate t) {
         ContentValues cv = new ContentValues();
-        cv.put(dbHelper.COLUMN_PAYEE, t.payee);
+        cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
         for (int i=0; i<t.numAccounts(); i++) {
-            cv.put(dbHelper.columnAcc(i), t.getAccount(i));
+            cv.put(JournalDbHelper.columnAcc(i), t.getAccount(i));
         }
-        long insertid = db.insert(dbHelper.TABLE_TEMPLATES, null, cv);
+        long insertid = db.insert(JournalDbHelper.TABLE_TEMPLATES, null, cv);
         Log.d(logTag, "db entry added with insert id " + insertid);
     }
     public void addTemplate(String payee, String acc1, String acc2) {
@@ -269,18 +296,18 @@ public class JournalDataSource extends MyDataSource {
     // edit a template (update)
     public void editTemplate(TransactionTemplate t){
         ContentValues cv = new ContentValues();
-        cv.put(dbHelper.COLUMN_PAYEE, t.payee);
+        cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
         for (int i=0; i<t.numAccounts(); i++) {
-            cv.put(dbHelper.columnAcc(i), t.getAccount(i));
+            cv.put(JournalDbHelper.columnAcc(i), t.getAccount(i));
         }
-        db.update(dbHelper.TABLE_TEMPLATES, cv, dbHelper.COLUMN_ID + "=" + t.getDatabaseID(), null);
+        db.update(JournalDbHelper.TABLE_TEMPLATES, cv, JournalDbHelper.COLUMN_ID + "=" + t.getDatabaseID(), null);
         Log.d(logTag, "updated db entry with id " + t.getDatabaseID());
     }
 
     // delete a template
     public void  deleteTemplate(TransactionTemplate t) {
         int id = t.getDatabaseID();
-        int num = db.delete(dbHelper.TABLE_TEMPLATES, dbHelper.COLUMN_ID + "=" + id, null);
+        int num = db.delete(JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.COLUMN_ID + "=" + id, null);
 
         if (num > 1)
             throw new RuntimeException("deleteTemplate() deleted "+num+" Transactions, but 1 was expected.");

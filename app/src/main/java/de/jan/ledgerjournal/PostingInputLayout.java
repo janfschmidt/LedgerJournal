@@ -25,6 +25,7 @@ public class PostingInputLayout extends LinearLayout {
     protected LayoutParams amountParams;
     protected LayoutParams currParams;
 
+    String[] accounts;
     ArrayAdapter<String> accountAdapter;
 
     PostingInputLayout(Context context) {
@@ -57,9 +58,8 @@ public class PostingInputLayout extends LinearLayout {
         currency.setText("€");
 
 
-        // auto complete from string lists in strings.xml
-        String[] accounts = getResources().getStringArray(R.array.accountList);
-        accountAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1,accounts);
+        // auto complete from string list
+        accountAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, new String[]{});
         account.setAdapter(accountAdapter);
         account.setThreshold(1);
 
@@ -68,7 +68,10 @@ public class PostingInputLayout extends LinearLayout {
         this.addView(currency);
     }
 
-
+    public void setAutoCompleteAccounts(String[] accounts) {
+        this.accounts = accounts;
+        accountAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, accounts);
+    }
 
     public String getAccount() {return account.getText().toString();}
     public double getAmount() {return parseAmount(amount.getText().toString());}
@@ -82,6 +85,10 @@ public class PostingInputLayout extends LinearLayout {
     public void setPosting(Posting p) {
         account.setText(p.account);
         amount.setText(String.valueOf(p.amount));
+    }
+
+    public void setAccount(String acc) {
+        account.setText(acc);
     }
 
     private static double parseAmount(String s) {

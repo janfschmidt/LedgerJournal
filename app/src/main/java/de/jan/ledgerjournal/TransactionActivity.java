@@ -1,15 +1,11 @@
 package de.jan.ledgerjournal;
 
 import android.database.Cursor;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.LinearLayout;
@@ -17,7 +13,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,9 +27,7 @@ public class TransactionActivity extends AppCompatActivity {
     EditText inputDate;
     AutoCompleteTextView inputPayee;
     ArrayList<PostingInputLayout> inputPostings = new ArrayList<>();
-
-    ArrayAdapter<String> payeeAdapter;
-
+    String[] accounts;
 
     Calendar c;
     SimpleDateFormat dateFormater;
@@ -63,24 +56,32 @@ public class TransactionActivity extends AppCompatActivity {
         addPostingInputLine();
 
 
-        // auto complete from Database
+        // PAYEE auto complete from Database
         SimpleCursorAdapter payeeAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, new String[] {JournalDbHelper.COLUMN_PAYEE}, new int[] {android.R.id.text1}, 0);
         inputPayee.setAdapter(payeeAdapter);
         inputPayee.setThreshold(1);
-
         payeeAdapter.setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
             public String convertToString(android.database.Cursor cursor) {
                 return dataSource.cursorToTemplate(cursor).payee;
             }
         });
-
         payeeAdapter.setFilterQueryProvider(new FilterQueryProvider() {
             public Cursor runQuery(CharSequence constraint) {
                 Cursor cursor = null;
-                if (constraint!=null && constraint!="") {
+                if (constraint != null && constraint != "") {
                     cursor = dataSource.getMatching(JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.COLUMN_PAYEE, constraint.toString());
                 }
                 return cursor;
+            }
+        });
+
+        inputPayee.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, View view, int position, long id) {
+                Cursor cursor = (Cursor) parent.getItemAtPosition(position);
+                cursor.moveToPosition(position);
+
+                insertTemplate( dataSource.cursorToTemplate(cursor) );
             }
         });
 
@@ -107,6 +108,12 @@ public class TransactionActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         dataSource.open();
+
+        // ACCOUNT auto complete via string array filled from Database
+        accounts = dataSource.getAllTemplateAccounts();
+        for (PostingInputLayout pil : inputPostings) {
+            pil.setAutoCompleteAccounts(accounts);
+        }
     }
 
     @Override
@@ -161,7 +168,6 @@ public class TransactionActivity extends AppCompatActivity {
     protected void insertTransaction(Transaction t) {
         inputDate.setText(t.date);
         inputPayee.setText(t.payee);
-
         while (t.numPostings() > inputPostings.size()) {
             addPostingInputLine();
         }
@@ -169,4 +175,15 @@ public class TransactionActivity extends AppCompatActivity {
             inputPostings.get(i).setPosting(t.posting(i));
         }
     }
+
+    protected void insertTemplate(TransactionTemplate t) {
+        inputPayee.setText(t.payee);
+        while (t.numAccounts() > inputPostings.size()) {
+            addPostingInputLine();
+        }
+        for (int i=0; i<t.numAccounts(); i++) {
+            inputPostings.get(i).setAccount(t.getAccount(i));
+        }
+    }
+    protected void insertTemplate(String payee) {insertTemplate( dataSource.getTemplate(payee) );}
 }
