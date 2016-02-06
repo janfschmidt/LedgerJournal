@@ -43,6 +43,10 @@ public class JournalDataSource extends MyDataSource {
     public void open() {
         db = dbHelper.getWritableDatabase();
         Log.d(logTag, "Datenbank-Referenz erhalten. Pfad: " + db.getPath());
+        if(dbHelper.isNew()) {
+            addDefaultTemplates();
+            Log.d(logTag, "Added default Transaction Templates to database.");
+        }
     }
 
     public void close() {
@@ -50,6 +54,11 @@ public class JournalDataSource extends MyDataSource {
         Log.d(logTag, "Datenbank geschlossen.");
     }
 
+
+
+    public Cursor getMatching(String table, String columnname, String constraint) {
+        return db.query(table, null, columnname + " LIKE ?", new String[] {constraint+"%"}, null, null, null);
+    }
 
 
 
@@ -199,7 +208,7 @@ public class JournalDataSource extends MyDataSource {
 
     // ====================== Transaction Templates =====================
     // get template from database cursor
-    private TransactionTemplate cursorToTemplate(Cursor cursor) {
+    public TransactionTemplate cursorToTemplate(Cursor cursor) {
         String payee = getString(cursor, dbHelper.COLUMN_PAYEE);
         int id = getInt(cursor, dbHelper.COLUMN_ID);
 
@@ -231,6 +240,18 @@ public class JournalDataSource extends MyDataSource {
         return list;
     }
 
+    // get list of all template payees
+    public String[] getAllTemplatePayees() {
+        ArrayList<TransactionTemplate> list = getAllTemplates();
+        ArrayList<String> payees = new ArrayList<>();
+        for (TransactionTemplate t : list) {
+            payees.add(t.payee);
+        }
+        String[] s = new String[payees.size()];
+        payees.toArray(s);
+        return s;
+    }
+
     // add a template to the database
     public void addTemplate(TransactionTemplate t) {
         ContentValues cv = new ContentValues();
@@ -240,6 +261,9 @@ public class JournalDataSource extends MyDataSource {
         }
         long insertid = db.insert(dbHelper.TABLE_TEMPLATES, null, cv);
         Log.d(logTag, "db entry added with insert id " + insertid);
+    }
+    public void addTemplate(String payee, String acc1, String acc2) {
+        addTemplate(new TransactionTemplate(payee, acc1, acc2));
     }
 
     // edit a template (update)
@@ -262,5 +286,12 @@ public class JournalDataSource extends MyDataSource {
             throw new RuntimeException("deleteTemplate() deleted "+num+" Transactions, but 1 was expected.");
         else if (num == 0)
             throw new RuntimeException("deleteTemplate(): no Transaction with id "+id+" found.");
+    }
+
+    // add default templates
+    protected void addDefaultTemplates() {
+        addTemplate("Edeka", "Ausgaben:Bargeld", "Ausgaben:Lebensmittel");
+        addTemplate("Rewe", "Ausgaben:Bargeld", "Ausgaben:Lebensmittel");
+        addTemplate("Grieche", "Ausgaben:Bargeld", "Ausgaben:Ausgehen:Gastronomie");
     }
 }

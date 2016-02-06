@@ -12,4 +12,5 @@
         <item>Amazon</item>
         <item>Hüsgen</item>
     </string-array>
+    <string name="title_activity_templates">Transaction Templates</string>
 </resources>

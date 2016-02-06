@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 
 public class TransactionTemplate {
-    String payee;
+    public String payee;
     private ArrayList<String> accounts = new ArrayList<>();
     private int databaseID; // id to identify template in database
 

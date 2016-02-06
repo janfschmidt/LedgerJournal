@@ -33,6 +33,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_BASENAME_VAL = "val";
 
     protected String logTag = this.getClass().getSimpleName();
+    protected boolean newDB = false;
 
 
     public JournalDbHelper(Context context) {
@@ -47,10 +48,13 @@ public class JournalDbHelper extends SQLiteOpenHelper {
             db.execSQL(sqlCreate_JOURNAL());
             Log.d(logTag, "Tabelle wird angelegt mit Befehl: " + sqlCreate_TOEPFE());
             db.execSQL(sqlCreate_TOEPFE());
+            Log.d(logTag, "Tabelle wird angelegt mit Befehl: " + sqlCreate_TEMPLATES());
+            db.execSQL(sqlCreate_TEMPLATES());
         }
         catch(Exception e) {
             Log.e(logTag, "Fehler beim Anlegen der Tabellen: " + e.getMessage());
         }
+        newDB = true;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
         this.onCreate(db);
     }
 
-
+    public boolean isNew() {return newDB;}
     public static String columnAcc(int index) {checkPostingIndex(index); return COLUMN_BASENAME_ACC + index;}
     public static String columnVal(int index) {checkPostingIndex(index); return COLUMN_BASENAME_VAL + index;}
 
@@ -76,7 +80,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
                 COLUMN_PAYEE + " TEXT NOT NULL, ";
         for (int i=0; i<MAX_POSTINGS; i++) {
             cmd +=  columnAcc(i) + " TEXT";
-            if (i < 2) cmd +=  "NOT NULL";               // accounts 0&1 needed, further accounts optional
+            if (i < 2) cmd +=  " NOT NULL";              // accounts 0&1 needed, further accounts optional
             cmd += ", " + columnVal(i) + " FLOAT, ";     // values are optional (added to zero by ledger)
         }
         cmd += COLUMN_CURRENCY + " TEXT NOT NULL);";
@@ -92,9 +96,10 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     protected String sqlCreate_TEMPLATES() {
         String cmd = "CREATE TABLE " + TABLE_TEMPLATES + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_PAYEE + " TEXT NOT NULL";
+                COLUMN_PAYEE + " TEXT NOT NULL UNIQUE";
         for (int i=0; i<MAX_POSTINGS; i++) {
-            cmd += ", " + columnAcc(i) + " TEXT NOT NULL";
+            cmd += ", " + columnAcc(i) + " TEXT";
+            if (i < 2) cmd +=  " NOT NULL";          // accounts 0&1 needed, further accounts optional
         }
         cmd += ");";
         return cmd;

@@ -1,5 +1,6 @@
 package de.jan.ledgerjournal;
 
+import android.database.Cursor;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FilterQueryProvider;
 import android.widget.LinearLayout;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,6 +34,7 @@ public class TransactionActivity extends AppCompatActivity {
     ArrayList<PostingInputLayout> inputPostings = new ArrayList<>();
 
     ArrayAdapter<String> payeeAdapter;
+
 
     Calendar c;
     SimpleDateFormat dateFormater;
@@ -58,11 +63,26 @@ public class TransactionActivity extends AppCompatActivity {
         addPostingInputLine();
 
 
-        // auto complete from string lists in strings.xml
-        String[] payees = getResources().getStringArray(R.array.payeeList);
-        payeeAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,payees);
+        // auto complete from Database
+        SimpleCursorAdapter payeeAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, new String[] {JournalDbHelper.COLUMN_PAYEE}, new int[] {android.R.id.text1}, 0);
         inputPayee.setAdapter(payeeAdapter);
         inputPayee.setThreshold(1);
+
+        payeeAdapter.setCursorToStringConverter(new SimpleCursorAdapter.CursorToStringConverter() {
+            public String convertToString(android.database.Cursor cursor) {
+                return dataSource.cursorToTemplate(cursor).payee;
+            }
+        });
+
+        payeeAdapter.setFilterQueryProvider(new FilterQueryProvider() {
+            public Cursor runQuery(CharSequence constraint) {
+                Cursor cursor = null;
+                if (constraint!=null && constraint!="") {
+                    cursor = dataSource.getMatching(JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.COLUMN_PAYEE, constraint.toString());
+                }
+                return cursor;
+            }
+        });
 
 
         // fill form with given Transaction (edit Transaction)
@@ -81,6 +101,21 @@ public class TransactionActivity extends AppCompatActivity {
     }
 
 
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        dataSource.open();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dataSource.close();
+    }
+
+
     // OK Button
     public void onOkClick(View v) {
         Transaction t = new Transaction();
@@ -94,7 +129,6 @@ public class TransactionActivity extends AppCompatActivity {
         }
 
         //write transaction to database
-        dataSource.open();
         if (editMode) {
             t.setDatabaseID(editme.getDatabaseID());
             dataSource.editTransaction(t);
@@ -102,8 +136,6 @@ public class TransactionActivity extends AppCompatActivity {
         else {
             dataSource.addTransaction(t, topfId);
         }
-
-        dataSource.close();
         finish();
     }
 
