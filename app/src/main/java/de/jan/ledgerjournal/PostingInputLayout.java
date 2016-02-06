@@ -46,7 +46,7 @@ public class PostingInputLayout extends LinearLayout {
         amountParams.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
         amount.setLayoutParams(amountParams);
         amount.setGravity(Gravity.RIGHT);
-        amount.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
+        amount.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
         amount.setHint("0.00");
 
         currency = new TextView(context);

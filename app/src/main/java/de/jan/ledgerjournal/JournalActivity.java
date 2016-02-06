@@ -34,7 +34,6 @@ public class JournalActivity extends AppCompatActivity {
 
     int topfId;
     JournalDataSource dataSource;
-    ToepfeDataSource toepfeSource;
 
     private ShareActionProvider mShareActionProvider;
 
@@ -46,8 +45,6 @@ public class JournalActivity extends AppCompatActivity {
 
 
         dataSource = new JournalDataSource(this);
-        toepfeSource = new ToepfeDataSource(this);
-        toepfeSource.open();
 
         Bundle bundle = getIntent().getExtras();
         topfId = bundle.getInt("topfId");
@@ -74,10 +71,9 @@ public class JournalActivity extends AppCompatActivity {
 
     protected void onResume() {
         super.onResume();
-        toepfeSource.open();
         dataSource.open();
 
-        String name = toepfeSource.getTopfName(topfId);
+        String name = dataSource.getTopfName(topfId);
         this.setTitle(name);
         journal.setName(name);
 
@@ -86,7 +82,6 @@ public class JournalActivity extends AppCompatActivity {
 
     protected void onStop() {
         super.onStop();
-        toepfeSource.close();
         dataSource.close();
     }
 
