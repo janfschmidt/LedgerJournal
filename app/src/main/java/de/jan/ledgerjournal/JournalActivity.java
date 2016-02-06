@@ -152,6 +152,7 @@ public class JournalActivity extends AppCompatActivity {
 
             menu.add("Edit Transaction");
             menu.add("Delete Transaction");
+            menu.add("Add to Templates");
         }
     }
 
@@ -166,6 +167,9 @@ public class JournalActivity extends AppCompatActivity {
         else if (item.getTitle()=="Delete Transaction") {
             Log.d("JournalActivity", "Context menu: delete selected");
             deleteJournalTransaction(info.position);
+        }
+        else if (item.getTitle()=="Add to Templates") {
+            addToTemplates(info.position);
         }
         else {
             return false;
@@ -190,6 +194,12 @@ public class JournalActivity extends AppCompatActivity {
         i.putExtra("topfId", topfId);
         i.putExtra("transaction", journal.get(position));
         startActivity(i);
+    }
+
+    private void addToTemplates(int position) {
+        dataSource.addTemplate( journal.get(position) );
+        Toast toast = Toast.makeText(this, "Added Transaction to Templates.", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     private void saveToFile() {

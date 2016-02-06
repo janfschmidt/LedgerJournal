@@ -292,6 +292,7 @@ public class JournalDataSource extends MyDataSource {
     public void addTemplate(String payee, String acc1, String acc2) {
         addTemplate(new TransactionTemplate(payee, acc1, acc2));
     }
+    public void addTemplate(Transaction t) {}
 
     // edit a template (update)
     public void editTemplate(TransactionTemplate t){
