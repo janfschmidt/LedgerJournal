@@ -41,11 +41,9 @@ public class PostingLayout extends LinearLayout {
         this.addView(value);
     }
 
-    public void addPosting(Posting posting) {
-
-    }
 
     public void setAccount(String acc) {account.setText(acc);}
     public void setValue(String val) {value.setText(val);}
+    public void set(Posting p) {setAccount(p.account); setValue(p.value());}
 
 }

@@ -182,6 +182,7 @@ public class JournalActivity extends AppCompatActivity {
     private void showAllJournalTransactions() {
         journal.set(dataSource.getAllTransactions(topfId));
         journalAdapter.notifyDataSetChanged();
+        Log.d("JournalActivity", "called notifyDataSetChanged()");
     }
 
     private void deleteJournalTransaction(int position) {
@@ -248,29 +249,40 @@ class TransactionsAdapter extends ArrayAdapter<Transaction> {
         // Get the data item for this position
         Transaction t = getItem(position);
 
-        // Check if an existing view is being reused, otherwise inflate the view
+        // If no existing view is reused: inflate the view & create PostingLayouts
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.transaction, parent, false);
-
             LinearLayout transactionLayout = (LinearLayout) view.findViewById(R.id.transactionLayout);
             //for each posting, PostingLayout is created
             for (Posting p : t.getPostings()) {
                 PostingLayout pl = new PostingLayout(getContext());
-                pl.setAccount(p.account);
-                pl.setValue(p.value());
+                pl.set(p);
                 transactionLayout.addView(pl);
             }
         }
+        // If view is reused: update PostingLayouts
+        else {
+            int numViews = ((ViewGroup)view).getChildCount();
+            Log.d("TransactionAdapter", "update up to "+numViews+" Views for Payee "+t.payee);
+            int i=0;
+            for (int n=0; i<numViews; ++n) {
+                if (i >= t.numPostings())
+                    break;
+                View nextChild = ((ViewGroup)view).getChildAt(n);
+                if (nextChild instanceof PostingLayout) {
+                    Log.d("TransactionAdapter", "update PostingLayout (child "+n+")");
+                    ((PostingLayout)nextChild).set(t.posting(i));
+                    i++;
+                }
+            }
+        }
 
-        // Lookup view for data population
+        // always set date & payee
         TextView date = (TextView) view.findViewById(R.id.transactDate);
         TextView payee = (TextView) view.findViewById(R.id.transactPayee);
-
-        // Populate the data into the template view using the data object
         date.setText(t.date);
         payee.setText(t.payee);
 
-        // Return the completed view to render on screen
         return view;
     }
 }
