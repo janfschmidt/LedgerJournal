@@ -78,7 +78,7 @@ public class JournalDataSource extends MyDataSource {
         Transaction t = new Transaction(date,payee, currency);
         for (int i=0; i<JournalDbHelper.MAX_POSTINGS; i++) {
             String account = getString(cursor, JournalDbHelper.columnAcc(i));
-            if (account != null) {
+            if (account != null && !account.equals("")) {
                 t.addPosting(account, getDouble(cursor, JournalDbHelper.columnVal(i)));
                 Log.d(logTag, "Posting " + i + ": " + t.posting(i).print());
             }
@@ -235,7 +235,7 @@ public class JournalDataSource extends MyDataSource {
         TransactionTemplate t = new TransactionTemplate(payee);
         for (int i=0; i<JournalDbHelper.MAX_POSTINGS; i++) {
             String account = getString(cursor, JournalDbHelper.columnAcc(i));
-            if (account != null) {
+            if (account != null && !account.equals("")) {
                 t.addAccount(account);
             }
         }
@@ -286,17 +286,28 @@ public class JournalDataSource extends MyDataSource {
         return s;
     }
 
-
-    public void addTemplate(String payee, String acc1, String acc2) {
+    public boolean addTemplate(Transaction t) {
+        t.date = "";
+        t.clearAmounts();
+        // check if template with this payee already exists
+        if (getAllTemplatePayees().contains(t.payee)) {
+            return false;
+        } else {
+            addTransaction(t, JournalDbHelper.TEMPLATE_TOPFID);
+            return true;
+        }
+    }
+    public boolean addTemplate(String payee, String acc1, String acc2) {
         Transaction t = new Transaction("", payee, "");
         t.addPosting(acc1, 0.0);
         t.addPosting(acc2, 0.0);
-        addTemplate(t);
+        return addTemplate(t);
     }
-    public void addTemplate(Transaction t) {
-        t.date = "";
-        t.clearAmounts();
-        addTransaction(t, JournalDbHelper.TEMPLATE_TOPFID);
+
+    public void replaceTemplate(Transaction t) {
+        Transaction old = getTemplate(t.payee).toTransaction();
+        deleteTransaction(old);
+        addTemplate(t);
     }
 
 

@@ -46,7 +46,6 @@ public class TransactionActivity extends AppCompatActivity {
         topfName = bundle.getString("topfName");
         topfId = bundle.getInt("topfId");
 
-        this.setTitle(topfName);
         inputLayout = (LinearLayout) findViewById(R.id.transactionInputLayout);
         inputDate = (EditText) findViewById(R.id.inputDate);
         inputPayee = (AutoCompleteTextView) findViewById(R.id.inputPayee);
@@ -109,6 +108,8 @@ public class TransactionActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         dataSource.open();
+        String name = dataSource.getTopfName(topfId);
+        this.setTitle(name);
 
         // ACCOUNT auto complete via string array filled from Database
         accounts = dataSource.getAllTemplateAccounts();
@@ -142,7 +143,13 @@ public class TransactionActivity extends AppCompatActivity {
             dataSource.editTransaction(t);
         }
         else {
-            dataSource.addTransaction(t, topfId);
+            if (topfId == JournalDbHelper.TEMPLATE_TOPFID) {
+                if (!dataSource.addTemplate(t))
+                    dataSource.replaceTemplate(t);
+            }
+            else {
+                dataSource.addTransaction(t, topfId);
+            }
         }
         finish();
     }
@@ -165,6 +172,10 @@ public class TransactionActivity extends AppCompatActivity {
         inputPostings.add(pil);
         inputLayout.addView(pil);
     }
+    protected void removePostingInputLine(PostingInputLayout pil){
+        inputLayout.removeView(pil);
+        inputPostings.remove(pil);
+    }
 
     protected void insertTransaction(Transaction t) {
         inputDate.setText(t.date);
@@ -182,11 +193,12 @@ public class TransactionActivity extends AppCompatActivity {
         while (t.numAccounts() > inputPostings.size()) {
             addPostingInputLine();
         }
-        for (int i=0; i<t.numAccounts(); i++) {
+        int num = t.numAccounts();
+        for (int i=0; i<num; i++) {
             inputPostings.get(i).setAccount(t.getAccount(i));
         }
-        for (int i=t.numAccounts(); i<inputPostings.size(); i++) {
-            inputPostings.get(i).clearPosting();
+        while (inputPostings.size() > num) {
+            removePostingInputLine( inputPostings.get(num) );
         }
     }
     protected void insertTemplate(String payee) {insertTemplate( dataSource.getTemplate(payee) );}

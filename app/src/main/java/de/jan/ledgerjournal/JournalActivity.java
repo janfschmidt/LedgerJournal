@@ -10,7 +10,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ShareActionProvider;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -37,7 +36,6 @@ public class JournalActivity extends AppCompatActivity {
     int topfId;
     JournalDataSource dataSource;
 
-    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +97,7 @@ public class JournalActivity extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.menu_item_share);
 
         // Fetch and store ShareActionProvider
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
         mShareActionProvider.setOnShareTargetSelectedListener(new ShareActionProvider.OnShareTargetSelectedListener() {
             @Override
             public boolean onShareTargetSelected(ShareActionProvider actionProvider, Intent intent) {
@@ -172,7 +170,7 @@ public class JournalActivity extends AppCompatActivity {
             deleteJournalTransaction(info.position);
         }
         else if (item.getTitle()=="Add to Templates") {
-            addToTemplates(info.position);
+            addToTemplates( journal.get(info.position) );
         }
         else {
             return false;
@@ -199,26 +197,16 @@ public class JournalActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    private void addToTemplates(int position) {
-        Transaction t = journal.get(position);
-        // check if template with this payee already exists
-        if (dataSource.getAllTemplatePayees().contains(t.payee)) {
-            replaceTemplateDialog(t);
-        }
-        else {
-            dataSource.addTemplate(t);
+    private void addToTemplates(Transaction t) {
+        if (dataSource.addTemplate(t)) {
             Toast toast = Toast.makeText(this, "Added Transaction to Templates.", Toast.LENGTH_SHORT);
             toast.show();
         }
+        else {
+            replaceTemplateDialog(t);
+        }
     }
 
-    private void replaceTemplate(Transaction t) {
-        Transaction old = dataSource.getTemplate(t.payee).toTransaction();
-        dataSource.deleteTransaction(old);
-        dataSource.addTemplate(t);
-        Toast toast = Toast.makeText(this, "Replaced Template for "+t.payee, Toast.LENGTH_SHORT);
-        toast.show();
-    }
 
     private void saveToFile() {
         journal.export();
@@ -231,7 +219,9 @@ public class JournalActivity extends AppCompatActivity {
         alert.setMessage("Replace Template for Payee " + t.payee + "?");
         alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                replaceTemplate(t);
+                dataSource.replaceTemplate(t);
+                Toast toast = Toast.makeText(getApplicationContext(), "Replaced Template for " + t.payee, Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
         alert.setNegativeButton("No", new DialogInterface.OnClickListener() {

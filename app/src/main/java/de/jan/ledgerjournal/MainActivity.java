@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         final String oldName =  topfList.get(index);
         alert.setTitle("Rename "+ oldName);
         final EditText input = new EditText(this);
+        input.setText(oldName);
         alert.setView(input);
 
         // Make an "OK" button to save the Text to topfList
