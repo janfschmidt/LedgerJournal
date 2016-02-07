@@ -1,6 +1,8 @@
 package de.jan.ledgerjournal;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
@@ -152,7 +154,8 @@ public class JournalActivity extends AppCompatActivity {
 
             menu.add("Edit Transaction");
             menu.add("Delete Transaction");
-            menu.add("Add to Templates");
+            if (topfId != JournalDbHelper.TEMPLATE_TOPFID)
+                menu.add("Add to Templates");
         }
     }
 
@@ -179,12 +182,12 @@ public class JournalActivity extends AppCompatActivity {
 
 
     private void showAllJournalTransactions() {
-        journal.set( dataSource.getAllTransactions(topfId) );
+        journal.set(dataSource.getAllTransactions(topfId));
         journalAdapter.notifyDataSetChanged();
     }
 
     private void deleteJournalTransaction(int position) {
-        dataSource.deleteTransaction( journal.get(position) );
+        dataSource.deleteTransaction(journal.get(position));
         journal.remove(position);
         journalAdapter.notifyDataSetChanged();
     }
@@ -197,8 +200,23 @@ public class JournalActivity extends AppCompatActivity {
     }
 
     private void addToTemplates(int position) {
-        dataSource.addTemplate( journal.get(position) );
-        Toast toast = Toast.makeText(this, "Added Transaction to Templates.", Toast.LENGTH_SHORT);
+        Transaction t = journal.get(position);
+        // check if template with this payee already exists
+        if (dataSource.getAllTemplatePayees().contains(t.payee)) {
+            replaceTemplateDialog(t);
+        }
+        else {
+            dataSource.addTemplate(t);
+            Toast toast = Toast.makeText(this, "Added Transaction to Templates.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
+    private void replaceTemplate(Transaction t) {
+        Transaction old = dataSource.getTemplate(t.payee).toTransaction();
+        dataSource.deleteTransaction(old);
+        dataSource.addTemplate(t);
+        Toast toast = Toast.makeText(this, "Replaced Template for "+t.payee, Toast.LENGTH_SHORT);
         toast.show();
     }
 
@@ -206,6 +224,21 @@ public class JournalActivity extends AppCompatActivity {
         journal.export();
         Toast toast = Toast.makeText(this, "Wrote file "+journal.exportFilePath(), Toast.LENGTH_LONG);
         toast.show();
+    }
+
+    protected void replaceTemplateDialog(final Transaction t) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Replace Template for Payee " + t.payee + "?");
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                replaceTemplate(t);
+            }
+        });
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
     }
 
 }

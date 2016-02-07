@@ -25,6 +25,14 @@ public class TransactionTemplate {
     }
     public TransactionTemplate(String payee) {this(payee, "", "");}
 
+    public Transaction toTransaction() {
+        Transaction t = new Transaction("",payee,"");
+        t.setDatabaseID(databaseID);
+        for (String acc : accounts)
+            t.addPosting(acc, 0.0);
+        return t;
+    }
+
 
     public ArrayList<String> getAccounts() {return accounts;}
     public String getAccount(int index) {return accounts.get(index);}

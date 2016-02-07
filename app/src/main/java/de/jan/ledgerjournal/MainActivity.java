@@ -81,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             return true;
         }
         else if (id == R.id.action_templates) {
-            Intent i = new Intent(MainActivity.this, TemplatesActivity.class);
+            Intent i = new Intent(MainActivity.this, JournalActivity.class);
+            i.putExtra("topfId", JournalDbHelper.TEMPLATE_TOPFID);
             startActivity(i);
         }
 
@@ -90,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.d("topf Click", position + ": " + topfList.get(position));
         Intent i = new Intent(MainActivity.this, JournalActivity.class);
         String topfname = topfList.get(position);
         i.putExtra("topfId", dataSource.getTopfId(topfname));

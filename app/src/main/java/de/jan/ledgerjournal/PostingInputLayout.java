@@ -91,6 +91,11 @@ public class PostingInputLayout extends LinearLayout {
         account.setText(acc);
     }
 
+    public void clearPosting() {
+        account.setText("");
+        amount.setText("");
+    }
+
     private static double parseAmount(String s) {
         double res = 0.0;
         try {

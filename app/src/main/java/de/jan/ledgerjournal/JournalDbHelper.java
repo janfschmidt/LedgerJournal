@@ -20,7 +20,8 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     public static final int DB_VERSION = 1;
     public static final String TABLE_JOURNAL = "journal";
     public static final String TABLE_TOEPFE = "toepfe";
-    public static final String TABLE_TEMPLATES = "templates";
+    //public static final String TABLE_TEMPLATES = "templates";
+    public static final int TEMPLATE_TOPFID = 0;
 
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_TOPFID = "topfid";
@@ -49,8 +50,8 @@ public class JournalDbHelper extends SQLiteOpenHelper {
             db.execSQL(sqlCreate_JOURNAL());
             Log.d(logTag, "Tabelle wird angelegt mit Befehl: " + sqlCreate_TOEPFE());
             db.execSQL(sqlCreate_TOEPFE());
-            Log.d(logTag, "Tabelle wird angelegt mit Befehl: " + sqlCreate_TEMPLATES());
-            db.execSQL(sqlCreate_TEMPLATES());
+//            Log.d(logTag, "Tabelle wird angelegt mit Befehl: " + sqlCreate_TEMPLATES());
+//            db.execSQL(sqlCreate_TEMPLATES());
         }
         catch(Exception e) {
             Log.e(logTag, "Fehler beim Anlegen der Tabellen: " + e.getMessage());
@@ -94,7 +95,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
                 COLUMN_TOPFNAME + " TEXT NOT NULL UNIQUE);";
     }
 
-    protected String sqlCreate_TEMPLATES() {
+ /*   protected String sqlCreate_TEMPLATES() {
         String cmd = "CREATE TABLE " + TABLE_TEMPLATES + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_PAYEE + " TEXT NOT NULL UNIQUE";
@@ -104,7 +105,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
         }
         cmd += ");";
         return cmd;
-    }
+    }*/
 
 
     // create array with database column names, used by JournalDataSource for Cursor
@@ -132,7 +133,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
         return a;
     }
 
-    public static String[] columns_TEMPLATES() {
+   public static String[] columns_TEMPLATES() {
         ArrayList<String> l = new ArrayList<>();
         l.add(COLUMN_ID);
         l.add(COLUMN_PAYEE);
@@ -158,6 +159,8 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     public static String getTopfFilter(int topfid) {
         return COLUMN_TOPFID + "=" + topfid;
     }
+    public static String getTemplateFilter(){ return COLUMN_TOPFID + "=" + TEMPLATE_TOPFID; }
+    public static String getTemplateFilter(String condition){ return COLUMN_TOPFID + "=" + TEMPLATE_TOPFID + " AND " + condition; }
 
     protected static void checkPostingIndex(int index) {
         if (index >= MAX_POSTINGS)

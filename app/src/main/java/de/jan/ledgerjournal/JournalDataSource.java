@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by jan on 06.01.16. From http://www.programmierenlernenhq.de/sqlite-datenbank-in-android-app-integrieren/
@@ -58,6 +60,9 @@ public class JournalDataSource extends MyDataSource {
 
     public Cursor getMatching(String table, String columnname, String constraint) {
         return db.query(table, null, columnname + " LIKE ?", new String[] {constraint+"%"}, null, null, null);
+    }
+    public Cursor getMatchingTemplate(String columnname, String constraint) {
+        return db.query(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.columns_TEMPLATES(), JournalDbHelper.getTemplateFilter(columnname + " LIKE ?"), new String[] {constraint+"%"}, null, null, null);
     }
 
 
@@ -140,6 +145,7 @@ public class JournalDataSource extends MyDataSource {
             throw new RuntimeException("deleteTransaction(): no Transaction with id "+id+" found.");
     }
 
+
     // delete a complete Journal/Topf by id
     public void deleteTopf(int topfid) {
         int num = db.delete(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.COLUMN_TOPFID + "=" + topfid, null);
@@ -173,7 +179,7 @@ public class JournalDataSource extends MyDataSource {
         return name;
     }
 
-    // get list of all Toepfe - e.g. to populate ListView
+    // get list of all Toepfe (NOT INCLUDING TEMPLATES) - e.g. to populate ListView
     public ArrayList<String> getAllToepfe() {
         ArrayList<String> list = new ArrayList<>();
         Cursor cursor = db.query(JournalDbHelper.TABLE_TOEPFE, JournalDbHelper.columns_TOEPFE(), null, null, null, null, null);
@@ -181,8 +187,10 @@ public class JournalDataSource extends MyDataSource {
 
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
-            String t = getString(cursor, JournalDbHelper.COLUMN_TOPFNAME);
-            list.add(t);
+            if (getInt(cursor, JournalDbHelper.COLUMN_TOPFID) != JournalDbHelper.TEMPLATE_TOPFID) {
+                String t = getString(cursor, JournalDbHelper.COLUMN_TOPFNAME);
+                list.add(t);
+            }
             cursor.moveToNext();
         }
         cursor.close();
@@ -196,6 +204,14 @@ public class JournalDataSource extends MyDataSource {
 
         long insertid = db.insert(JournalDbHelper.TABLE_TOEPFE, null, cv);
         Log.d(logTag, "db entry added with insert id " + insertid);
+    }
+    public void addTemplateTopf() {
+        ContentValues cv = new ContentValues();
+        cv.put(JournalDbHelper.COLUMN_TOPFNAME, "Templates");
+        cv.put(JournalDbHelper.COLUMN_TOPFID, JournalDbHelper.TEMPLATE_TOPFID);
+
+        long insertid = db.insert(JournalDbHelper.TABLE_TOEPFE, null, cv);
+        Log.d(logTag, "db entry for templates added with insert id " + insertid);
     }
 
     public void editTopf(String oldTopfname, String newTopfname) {
@@ -229,44 +245,35 @@ public class JournalDataSource extends MyDataSource {
     }
 
     // get list of all Templates - e.g. to populate ListView
-    public ArrayList<TransactionTemplate> getAllTemplates() {
-        ArrayList<TransactionTemplate> list = new ArrayList<>();
-        Cursor cursor = db.query(JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.columns_TEMPLATES(), null, null, null, null, null);
-        Log.d(logTag, cursor.getCount() + " db-Einträge gelesen.");
-
-        cursor.moveToFirst();
-        while(!cursor.isAfterLast()) {
-            TransactionTemplate t = cursorToTemplate(cursor);
-            list.add(t);
-            cursor.moveToNext();
-        }
-        cursor.close();
-        return list;
+    public ArrayList<Transaction> getAllTemplates() {
+       return getAllTransactions(JournalDbHelper.TEMPLATE_TOPFID);
     }
 
     public TransactionTemplate getTemplate(String payee) {
-        Cursor cursor = db.query(JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.columns_TEMPLATES(), JournalDbHelper.COLUMN_PAYEE + "=" + payee, null, null, null, null);
+        Cursor cursor = db.query(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.columns_TEMPLATES(), JournalDbHelper.getTemplateFilter(JournalDbHelper.COLUMN_PAYEE + "='" + payee + "'"), null, null, null, null);
         cursor.moveToFirst();
         TransactionTemplate t = cursorToTemplate(cursor);
         cursor.close();
         return t;
     }
 
-    // get list of all template payees
-    public String[] getAllTemplatePayees() {
-        ArrayList<TransactionTemplate> list = getAllTemplates();
-        ArrayList<String> payees = new ArrayList<>();
-        for (TransactionTemplate t : list) {
-            payees.add(t.payee);
+
+    public ArrayList<String> getAllTemplatePayees() {
+        Cursor cursor = db.query(true, JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.columns_TEMPLATES(),  JournalDbHelper.getTemplateFilter(), null, null, null, null, null);
+        ArrayList<String> list = new ArrayList<>();
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast()) {
+            TransactionTemplate t = cursorToTemplate(cursor);
+            list.add(t.payee);
+            cursor.moveToNext();
         }
-        String[] s = new String[payees.size()];
-        s = payees.toArray(s);
-        return s;
+        cursor.close();
+        return list;
     }
 
     public String[] getAllTemplateAccounts() {
-        Cursor cursor = db.query(true, JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.columns_TEMPLATES(),  null, null, null, null, null, null);
-        ArrayList<String> list = new ArrayList<>();
+        Cursor cursor = db.query(true, JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.columns_TEMPLATES(),  JournalDbHelper.getTemplateFilter(), null, null, null, null, null);
+        HashSet<String> list = new HashSet<>();
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
             TransactionTemplate t = cursorToTemplate(cursor);
@@ -279,45 +286,23 @@ public class JournalDataSource extends MyDataSource {
         return s;
     }
 
-    // add a template to the database
-    public void addTemplate(TransactionTemplate t) {
-        ContentValues cv = new ContentValues();
-        cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
-        for (int i=0; i<t.numAccounts(); i++) {
-            cv.put(JournalDbHelper.columnAcc(i), t.getAccount(i));
-        }
-        long insertid = db.insert(JournalDbHelper.TABLE_TEMPLATES, null, cv);
-        Log.d(logTag, "db entry added with insert id " + insertid);
-    }
+
     public void addTemplate(String payee, String acc1, String acc2) {
-        addTemplate(new TransactionTemplate(payee, acc1, acc2));
+        Transaction t = new Transaction("", payee, "");
+        t.addPosting(acc1, 0.0);
+        t.addPosting(acc2, 0.0);
+        addTemplate(t);
     }
-    public void addTemplate(Transaction t) {}
-
-    // edit a template (update)
-    public void editTemplate(TransactionTemplate t){
-        ContentValues cv = new ContentValues();
-        cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
-        for (int i=0; i<t.numAccounts(); i++) {
-            cv.put(JournalDbHelper.columnAcc(i), t.getAccount(i));
-        }
-        db.update(JournalDbHelper.TABLE_TEMPLATES, cv, JournalDbHelper.COLUMN_ID + "=" + t.getDatabaseID(), null);
-        Log.d(logTag, "updated db entry with id " + t.getDatabaseID());
+    public void addTemplate(Transaction t) {
+        t.date = "";
+        t.clearAmounts();
+        addTransaction(t, JournalDbHelper.TEMPLATE_TOPFID);
     }
 
-    // delete a template
-    public void  deleteTemplate(TransactionTemplate t) {
-        int id = t.getDatabaseID();
-        int num = db.delete(JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.COLUMN_ID + "=" + id, null);
-
-        if (num > 1)
-            throw new RuntimeException("deleteTemplate() deleted "+num+" Transactions, but 1 was expected.");
-        else if (num == 0)
-            throw new RuntimeException("deleteTemplate(): no Transaction with id "+id+" found.");
-    }
 
     // add default templates
     protected void addDefaultTemplates() {
+        addTemplateTopf();
         addTemplate("Edeka", "Ausgaben:Bargeld", "Ausgaben:Lebensmittel");
         addTemplate("Rewe", "Ausgaben:Bargeld", "Ausgaben:Lebensmittel");
         addTemplate("Grieche", "Ausgaben:Bargeld", "Ausgaben:Ausgehen:Gastronomie");

@@ -69,12 +69,13 @@ public class TransactionActivity extends AppCompatActivity {
             public Cursor runQuery(CharSequence constraint) {
                 Cursor cursor = null;
                 if (constraint != null && constraint != "") {
-                    cursor = dataSource.getMatching(JournalDbHelper.TABLE_TEMPLATES, JournalDbHelper.COLUMN_PAYEE, constraint.toString());
+                    cursor = dataSource.getMatchingTemplate(JournalDbHelper.COLUMN_PAYEE, constraint.toString());
                 }
                 return cursor;
             }
         });
 
+        // fill Template to form
         inputPayee.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
@@ -183,6 +184,9 @@ public class TransactionActivity extends AppCompatActivity {
         }
         for (int i=0; i<t.numAccounts(); i++) {
             inputPostings.get(i).setAccount(t.getAccount(i));
+        }
+        for (int i=t.numAccounts(); i<inputPostings.size(); i++) {
+            inputPostings.get(i).clearPosting();
         }
     }
     protected void insertTemplate(String payee) {insertTemplate( dataSource.getTemplate(payee) );}

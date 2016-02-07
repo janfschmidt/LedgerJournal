@@ -57,8 +57,14 @@ public class Transaction implements Parcelable {
         postings.remove(index);
     }
 
+    public void clearAmounts() {
+        for (Posting p : postings)
+            p.amount = 0.0;
+    }
+
     public TransactionTemplate toTemplate() {
         TransactionTemplate t = new TransactionTemplate(payee);
+        t.setDatabaseID(databaseID);
         for (Posting p : postings)
             t.addAccount(p.account);
         return t;
