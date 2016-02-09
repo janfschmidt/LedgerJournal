@@ -3,6 +3,7 @@ package de.jan.ledgerjournal;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -54,7 +55,6 @@ public class TransactionActivity extends AppCompatActivity {
         addPostingInputLine();
         addPostingInputLine();
 
-
         // PAYEE auto complete from Database
         SimpleCursorAdapter payeeAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null, new String[] {JournalDbHelper.COLUMN_PAYEE}, new int[] {android.R.id.text1}, 0);
         inputPayee.setAdapter(payeeAdapter);
@@ -85,7 +85,6 @@ public class TransactionActivity extends AppCompatActivity {
             }
         });
 
-
         // fill form with given Transaction (edit Transaction)
         if (bundle.containsKey("transaction")) {
             editme = bundle.getParcelable("transaction");
@@ -113,8 +112,8 @@ public class TransactionActivity extends AppCompatActivity {
 
         // ACCOUNT auto complete via string array filled from Database
         accounts = dataSource.getAllTemplateAccounts();
-        for (PostingInputLayout pil : inputPostings) {
-            pil.setAutoCompleteAccounts(accounts);
+        for (int i=0; i<inputPostings.size(); i++) {
+            inputPostings.get(i).setAutoCompleteAccounts(accounts);
         }
     }
 

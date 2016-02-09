@@ -2,6 +2,7 @@ package de.jan.ledgerjournal;
 
 import android.content.Context;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -25,7 +26,7 @@ public class PostingInputLayout extends LinearLayout {
     protected LayoutParams amountParams;
     protected LayoutParams currParams;
 
-    String[] accounts;
+    String[] accounts = new String[] {};
     ArrayAdapter<String> accountAdapter;
 
     PostingInputLayout(Context context) {
@@ -59,7 +60,7 @@ public class PostingInputLayout extends LinearLayout {
 
 
         // auto complete from string list
-        accountAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, new String[]{});
+        accountAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, accounts);
         account.setAdapter(accountAdapter);
         account.setThreshold(1);
 
@@ -68,9 +69,10 @@ public class PostingInputLayout extends LinearLayout {
         this.addView(currency);
     }
 
-    public void setAutoCompleteAccounts(String[] accounts) {
-        this.accounts = accounts;
+    public void setAutoCompleteAccounts(String[] acc) {
+        accounts = acc;
         accountAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, accounts);
+        account.setAdapter(accountAdapter);
     }
 
     public String getAccount() {return account.getText().toString();}

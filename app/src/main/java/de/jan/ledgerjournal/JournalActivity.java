@@ -270,7 +270,7 @@ class TransactionsAdapter extends ArrayAdapter<Transaction> {
                     break;
                 View nextChild = ((ViewGroup)view).getChildAt(n);
                 if (nextChild instanceof PostingLayout) {
-                    Log.d("TransactionAdapter", "update PostingLayout (child "+n+")");
+                    //Log.d("TransactionAdapter", "update PostingLayout (child "+n+")");
                     ((PostingLayout)nextChild).set(t.posting(i));
                     i++;
                 }
