@@ -1,16 +1,8 @@
 <resources>
     <string name="app_name">LedgerJournal</string>
     <string name="action_settings">Settings</string>
-    <string-array name="accountList">
-        <item>Ausgaben:Bargeld</item>
-        <item>Ausgaben:Geschenke</item>
-        <item>Ausgaben:Lebensmittel</item>
-        <item>Vermögen:Girokonto</item>
-    </string-array>
-    <string-array name="payeeList">
-        <item>Edeka</item>
-        <item>Amazon</item>
-        <item>Hüsgen</item>
-    </string-array>
-    <string name="title_activity_templates">Transaction Templates</string>
+    <string name="preference_dateformat_title">Date Format</string>
+    <string name="preference_dateformat_default">yyyy/MM/dd</string>
+    <string name="preference_currency_title">Currency</string>
+    <string name="preference_currency_default">€</string>
 </resources>

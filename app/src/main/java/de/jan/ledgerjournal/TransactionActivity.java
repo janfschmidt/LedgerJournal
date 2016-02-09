@@ -1,6 +1,8 @@
 package de.jan.ledgerjournal;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -93,8 +95,9 @@ public class TransactionActivity extends AppCompatActivity {
         }
         // set default date (today) for new Transaction
         else {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
             c = Calendar.getInstance();
-            dateFormater = new SimpleDateFormat("yyyy/MM/dd");
+            dateFormater = new SimpleDateFormat( sharedPref.getString("dateformat", "@string/preferences_dateformat_default") );
             inputDate.setText(dateFormater.format(c.getTime()), TextView.BufferType.EDITABLE);
             editMode = false;
         }
@@ -126,12 +129,13 @@ public class TransactionActivity extends AppCompatActivity {
 
     // OK Button
     public void onOkClick(View v) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         Transaction t = new Transaction();
 
         // write data to transaction
         t.date = inputDate.getText().toString();
         t.payee = inputPayee.getText().toString();
-        t.currency = "€";
+        t.currency = sharedPref.getString("currency", "@string/preferences_currency_default");
         for (PostingInputLayout pil : inputPostings) {
             t.addPosting( pil.getPosting() );
         }

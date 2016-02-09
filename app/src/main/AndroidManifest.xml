@@ -32,14 +32,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".JournalActivity" />
         </activity>
-        <activity
-            android:name=".TemplatesActivity"
-            android:label="@string/title_activity_templates"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".SettingsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.jan.ledgerjournal.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
     </application>
 

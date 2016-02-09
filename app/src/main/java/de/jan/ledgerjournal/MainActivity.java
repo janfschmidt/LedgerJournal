@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
         dataSource = new JournalDataSource(this);
 
         topfListView = (ListView) findViewById(R.id.topfListView);
@@ -78,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
+            Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(i);
             return true;
         }
         else if (id == R.id.action_templates) {
