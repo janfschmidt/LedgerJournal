@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -43,9 +44,10 @@ public class PostingInputLayout extends LinearLayout {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
         account = new AutoCompleteTextView(context);
-        accParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-        accParams.weight = 3;
+        accParams = new LayoutParams(0,LayoutParams.WRAP_CONTENT);
+        accParams.weight = 1;
         accParams.gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
+
         account.setLayoutParams(accParams);
         account.setHint("Your:Account");
         account.setSingleLine();
@@ -53,8 +55,7 @@ public class PostingInputLayout extends LinearLayout {
         //account.setHorizontallyScrolling(true);
 
         amount = new EditText(context);
-        amountParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
-        amountParams.weight = 8;
+        amountParams = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
         amountParams.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
         amount.setLayoutParams(amountParams);
         amount.setGravity(Gravity.RIGHT);
@@ -62,11 +63,10 @@ public class PostingInputLayout extends LinearLayout {
         amount.setHint("0.00");
 
         currency = new TextView(context);
-        currParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        currParams.weight = 10;
-        currParams.gravity = Gravity.CENTER;
+        currParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        currParams.gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
         currency.setLayoutParams(currParams);
-        currency.setText( sharedPref.getString("currency", "@string/preferences_currency_default") );
+        currency.setText(sharedPref.getString("currency", "@string/preferences_currency_default"));
 
 
         // auto complete from string list
