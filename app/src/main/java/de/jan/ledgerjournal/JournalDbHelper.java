@@ -29,6 +29,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_PAYEE = "payee";
     public static final String COLUMN_CURRENCY = "currency";
+    public static final String COLUMN_CURRENCYPOSITION = "currpos";
 
     public static final int MAX_POSTINGS = 4;
     public static final String COLUMN_BASENAME_ACC = "acc";
@@ -85,7 +86,8 @@ public class JournalDbHelper extends SQLiteOpenHelper {
             if (i < 2) cmd +=  " NOT NULL";              // accounts 0&1 needed, further accounts optional
             cmd += ", " + columnVal(i) + " FLOAT, ";     // values are optional (added to zero by ledger)
         }
-        cmd += COLUMN_CURRENCY + " TEXT NOT NULL);";
+        cmd += COLUMN_CURRENCY + " TEXT NOT NULL, ";
+        cmd += COLUMN_CURRENCYPOSITION + " INTEGER NOT NULL);";
         return cmd;
     }
 
@@ -95,18 +97,6 @@ public class JournalDbHelper extends SQLiteOpenHelper {
                 COLUMN_TOPFNAME + " TEXT NOT NULL UNIQUE);";
     }
 
- /*   protected String sqlCreate_TEMPLATES() {
-        String cmd = "CREATE TABLE " + TABLE_TEMPLATES + "(" +
-                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_PAYEE + " TEXT NOT NULL UNIQUE";
-        for (int i=0; i<MAX_POSTINGS; i++) {
-            cmd += ", " + columnAcc(i) + " TEXT";
-            if (i < 2) cmd +=  " NOT NULL";          // accounts 0&1 needed, further accounts optional
-        }
-        cmd += ");";
-        return cmd;
-    }*/
-
 
     // create array with database column names, used by JournalDataSource for Cursor
     public static String[] columns_JOURNAL() {
@@ -115,6 +105,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
         l.add(COLUMN_DATE);
         l.add(COLUMN_PAYEE);
         l.add(COLUMN_CURRENCY);
+        l.add(COLUMN_CURRENCYPOSITION);
         for (int i=0; i<MAX_POSTINGS; i++) {
             l.add(columnAcc(i));
             l.add(columnVal(i));

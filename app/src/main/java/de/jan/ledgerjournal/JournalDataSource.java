@@ -28,6 +28,13 @@ class MyDataSource {
         int index = cursor.getColumnIndex(columnname);
         return cursor.getInt(index);
     }
+    protected boolean getBool(Cursor cursor, String columnname) {
+        int b = getInt(cursor, columnname);
+        if (b==0)
+            return false;
+        else
+            return true;
+    }
 }
 
 
@@ -74,13 +81,14 @@ public class JournalDataSource extends MyDataSource {
         String payee = getString(cursor, JournalDbHelper.COLUMN_PAYEE);
         String currency = getString(cursor, JournalDbHelper.COLUMN_CURRENCY);
         int id = getInt(cursor, JournalDbHelper.COLUMN_ID);
+        boolean currpos = getBool(cursor, JournalDbHelper.COLUMN_CURRENCYPOSITION);
 
-        Transaction t = new Transaction(date,payee, currency);
+        Transaction t = new Transaction(date,payee, currency, currpos);
         for (int i=0; i<JournalDbHelper.MAX_POSTINGS; i++) {
             String account = getString(cursor, JournalDbHelper.columnAcc(i));
             if (account != null && !account.equals("")) {
                 t.addPosting(account, getDouble(cursor, JournalDbHelper.columnVal(i)));
-                Log.d(logTag, "Posting " + i + ": " + t.posting(i).print());
+                //Log.d(logTag, "Posting " + i + ": " + t.posting(i).print());
             }
         }
         t.setDatabaseID(id);
@@ -92,7 +100,7 @@ public class JournalDataSource extends MyDataSource {
     public ArrayList<Transaction> getAllTransactions(int topfid) {
         ArrayList<Transaction> list = new ArrayList<>();
         Cursor cursor = db.query(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.columns_JOURNAL(), JournalDbHelper.getTopfFilter(topfid), null, null, null, null);
-        Log.d(logTag, cursor.getCount() + " db-Einträge fuer Topfid " + topfid + " gelesen.");
+        Log.d(logTag, cursor.getCount() + " db-Einträge fuer Topfid " + topfid + " aus Tabelle "+JournalDbHelper.TABLE_JOURNAL+" gelesen.");
 
         cursor.moveToFirst();
         while(!cursor.isAfterLast()) {
@@ -111,6 +119,7 @@ public class JournalDataSource extends MyDataSource {
         cv.put(JournalDbHelper.COLUMN_DATE, t.date);
         cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
         cv.put(JournalDbHelper.COLUMN_CURRENCY, t.currency);
+        cv.put(JournalDbHelper.COLUMN_CURRENCYPOSITION, (t.currencyPosition)? 1 : 0);
         for (int i=0; i<t.numPostings(); i++) {
             cv.put(JournalDbHelper.columnAcc(i), t.posting(i).account);
             cv.put(JournalDbHelper.columnVal(i), t.posting(i).amount);
@@ -126,6 +135,7 @@ public class JournalDataSource extends MyDataSource {
         cv.put(JournalDbHelper.COLUMN_DATE, t.date);
         cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
         cv.put(JournalDbHelper.COLUMN_CURRENCY, t.currency);
+        cv.put(JournalDbHelper.COLUMN_CURRENCYPOSITION, (t.currencyPosition)? 1 : 0);
         for (int i=0; i<t.numPostings(); i++) {
             cv.put(JournalDbHelper.columnAcc(i), t.posting(i).account);
             cv.put(JournalDbHelper.columnVal(i), t.posting(i).amount);
@@ -172,7 +182,7 @@ public class JournalDataSource extends MyDataSource {
 
     public String getTopfName(int topfid) {
         Cursor cursor = db.query(JournalDbHelper.TABLE_TOEPFE, JournalDbHelper.columns_TOEPFE(), JournalDbHelper.COLUMN_TOPFID + "=" + topfid, null, null, null, null);
-        Log.d(logTag, cursor.getCount() + " db-Eintrag mit topfid " + topfid + " gelesen.");
+        Log.d(logTag, cursor.getCount() + " Topfname zu topfid " + topfid + " aus db gelesen.");
         cursor.moveToFirst(); // topfid is unique, so there can be only one entry
         String name = getString(cursor, JournalDbHelper.COLUMN_TOPFNAME);
         cursor.close();

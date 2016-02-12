@@ -15,7 +15,10 @@
         android:id="@+id/journalListView"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:paddingBottom="100dp"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"

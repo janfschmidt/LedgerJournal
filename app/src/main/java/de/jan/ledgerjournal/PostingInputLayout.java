@@ -1,7 +1,10 @@
 package de.jan.ledgerjournal;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -11,6 +14,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+
 /**
  * Created by jan on 23.01.2016.
  *
@@ -19,9 +24,9 @@ import android.widget.TextView;
  */
 public class PostingInputLayout extends LinearLayout {
 
-    public AutoCompleteTextView account;
-    public EditText amount;
-    public TextView currency;
+    protected AutoCompleteTextView account;
+    protected EditText amount;
+    protected TextView currency;
     protected LayoutParams accParams;
     protected LayoutParams amountParams;
     protected LayoutParams currParams;
@@ -35,12 +40,17 @@ public class PostingInputLayout extends LinearLayout {
         LayoutParams postingParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         this.setLayoutParams(postingParams);
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+
         account = new AutoCompleteTextView(context);
         accParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
         accParams.weight = 3;
         accParams.gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
         account.setLayoutParams(accParams);
         account.setHint("Your:Account");
+        account.setSingleLine();
+        account.setEllipsize(TextUtils.TruncateAt.START);
+        //account.setHorizontallyScrolling(true);
 
         amount = new EditText(context);
         amountParams = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.WRAP_CONTENT);
@@ -56,7 +66,7 @@ public class PostingInputLayout extends LinearLayout {
         currParams.weight = 10;
         currParams.gravity = Gravity.CENTER;
         currency.setLayoutParams(currParams);
-        currency.setText("€");
+        currency.setText( sharedPref.getString("currency", "@string/preferences_currency_default") );
 
 
         // auto complete from string list
@@ -64,9 +74,8 @@ public class PostingInputLayout extends LinearLayout {
         account.setAdapter(accountAdapter);
         account.setThreshold(1);
 
-        this.addView(account);
-        this.addView(amount);
-        this.addView(currency);
+
+        addViews(sharedPref.getBoolean("currpos", true));
     }
 
     public void setAutoCompleteAccounts(String[] acc) {
@@ -86,7 +95,30 @@ public class PostingInputLayout extends LinearLayout {
 
     public void setPosting(Posting p) {
         account.setText(p.account);
-        amount.setText(String.valueOf(p.amount));
+        if (p.amount != 0.0) {
+            DecimalFormat format = new DecimalFormat("0.00");
+            String formattedText = format.format(p.amount);
+            amount.setText(formattedText);
+        }
+        currency.setText(p.currency);
+        setCurrencyPosition(p.currencyPosition);
+    }
+
+    private void addViews(boolean currpos) {
+        addView(account);
+        if (currpos) {
+            addView(amount);
+            addView(currency);
+        }
+        else {
+            addView(currency);
+            addView(amount);
+        }
+    }
+    public void setCurrencyPosition(boolean currpos) {
+        removeAllViews();
+        addViews(currpos);
+        Log.d("PostingInputLayout", "currencyPosition set: " + currpos);
     }
 
     public void setAccount(String acc) {

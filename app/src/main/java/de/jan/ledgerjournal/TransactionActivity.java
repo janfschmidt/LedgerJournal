@@ -70,7 +70,9 @@ public class TransactionActivity extends AppCompatActivity {
             public Cursor runQuery(CharSequence constraint) {
                 Cursor cursor = null;
                 if (constraint != null && constraint != "") {
-                    cursor = dataSource.getMatchingTemplate(JournalDbHelper.COLUMN_PAYEE, constraint.toString());
+                    try {
+                        cursor = dataSource.getMatchingTemplate(JournalDbHelper.COLUMN_PAYEE, constraint.toString());
+                    } catch(Exception e) {}
                 }
                 return cursor;
             }
@@ -87,13 +89,13 @@ public class TransactionActivity extends AppCompatActivity {
             }
         });
 
-        // fill form with given Transaction (edit Transaction)
+        // "EDIT" MODE: fill form with given Transaction
         if (bundle.containsKey("transaction")) {
             editme = bundle.getParcelable("transaction");
             insertTransaction(editme);
             editMode = true;
         }
-        // set default date (today) for new Transaction
+        // "ADD NEW" MODE: set default date (today) for new Transaction
         else {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
             c = Calendar.getInstance();
@@ -135,7 +137,7 @@ public class TransactionActivity extends AppCompatActivity {
         // write data to transaction
         t.date = inputDate.getText().toString();
         t.payee = inputPayee.getText().toString();
-        t.currency = sharedPref.getString("currency", "@string/preferences_currency_default");
+        t.currency = inputPostings.get(0).getCurrency();
         for (PostingInputLayout pil : inputPostings) {
             t.addPosting( pil.getPosting() );
         }
@@ -143,6 +145,7 @@ public class TransactionActivity extends AppCompatActivity {
         //write transaction to database
         if (editMode) {
             t.setDatabaseID(editme.getDatabaseID());
+            t.currencyPosition = editme.currencyPosition;
             dataSource.editTransaction(t);
         }
         else {
@@ -151,6 +154,7 @@ public class TransactionActivity extends AppCompatActivity {
                     dataSource.replaceTemplate(t);
             }
             else {
+                t.currencyPosition = sharedPref.getBoolean("currpos", true);
                 dataSource.addTransaction(t, topfId);
             }
         }
@@ -161,6 +165,7 @@ public class TransactionActivity extends AppCompatActivity {
     public void onAddPostingClick(View v) {
         if (inputPostings.size() < JournalDbHelper.MAX_POSTINGS) {
             addPostingInputLine();
+            inputPostings.get(inputPostings.size()-1).setAutoCompleteAccounts(accounts);
         }
         else {
             Toast toast = Toast.makeText(this, "Maximum number of Postings reached.", Toast.LENGTH_SHORT);

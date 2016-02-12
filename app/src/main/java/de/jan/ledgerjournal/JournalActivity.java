@@ -250,7 +250,8 @@ class TransactionsAdapter extends ArrayAdapter<Transaction> {
         Transaction t = getItem(position);
 
         // If no existing view is reused: inflate the view & create PostingLayouts
-        if (view == null) {
+        // This is done for new Transactions OR if number of postings has changed
+        if (view == null || ((ViewGroup)view).getChildCount() != (t.numPostings()+1)) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.transaction, parent, false);
             LinearLayout transactionLayout = (LinearLayout) view.findViewById(R.id.transactionLayout);
             //for each posting, PostingLayout is created
@@ -263,7 +264,7 @@ class TransactionsAdapter extends ArrayAdapter<Transaction> {
         // If view is reused: update PostingLayouts
         else {
             int numViews = ((ViewGroup)view).getChildCount();
-            Log.d("TransactionAdapter", "update up to "+numViews+" Views for Payee "+t.payee);
+            //Log.d("TransactionAdapter", "update up to "+numViews+" Views for Payee "+t.payee);
             int i=0;
             for (int n=0; i<numViews; ++n) {
                 if (i >= t.numPostings())

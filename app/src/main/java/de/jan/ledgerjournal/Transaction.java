@@ -1,29 +1,36 @@
 package de.jan.ledgerjournal;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Transaction implements Parcelable {
     public String date;
     public String payee;
     public String currency;
+    public boolean currencyPosition;
     private ArrayList<Posting> postings = new ArrayList<Posting>();
     private int databaseID; // id to identify Transaction in Journal database
 
-    public Transaction(String date, String payee, String currency){
+    public Transaction(String date, String payee, String currency, boolean currencyPosition){
         this.date = date;
         this.payee = payee;
         this.currency = currency;
+        this.currencyPosition = currencyPosition;
         this.databaseID = -1;
     }
 
-    public Transaction(String date, String payee, Posting[] postings, String currency){
-        this(date,payee,currency);
-        for (Posting p : postings)
-            this.addPosting(p);
+    public Transaction(String date, String payee, String currency) {
+        this(date, payee, currency, true);
     }
 
     public Transaction() {
@@ -35,6 +42,7 @@ public class Transaction implements Parcelable {
         this.date = in.readString();
         this.payee = in.readString();
         this.currency = in.readString();
+        this.currencyPosition = in.readByte()!=0;
         in.readTypedList(postings, Posting.CREATOR);
         this.databaseID = in.readInt();
     }
@@ -46,11 +54,13 @@ public class Transaction implements Parcelable {
     public void addPosting(Posting p){
         if (postings.size() >= JournalDbHelper.MAX_POSTINGS)
             throw new RuntimeException("Maximum number of postings per Transaction reached! addPosting() aborted.");
-        else
+        else {
+            p.currencyPosition = this.currencyPosition;
             postings.add(p);
+        }
     }
-    public void addPosting(String account, double amount){
-        this.addPosting(new Posting(account, amount, this.currency));
+    public void addPosting(String account, double amount) {
+         addPosting( new Posting(account, amount, this.currency) );
     }
 
     public void deletePosting(int index) {
@@ -99,6 +109,7 @@ public class Transaction implements Parcelable {
         out.writeString(date);
         out.writeString(payee);
         out.writeString(currency);
+        out.writeByte((byte) (currencyPosition? 1 : 0));
         out.writeTypedList(postings);
         out.writeInt(databaseID);
     }
@@ -123,11 +134,16 @@ class Posting implements Parcelable {
     public String account;
     public double amount;
     public String currency;
+    boolean currencyPosition; //true=behind
 
-    public Posting(String account, double amount, String currency) {
+    public Posting(String account, double amount, String currency, boolean currencyPosition) {
         this.account = account;
         this.amount = amount;
         this.currency = currency;
+        this.currencyPosition = currencyPosition;
+    }
+    public Posting(String account, double amount, String currency) {
+        this(account, amount, currency, true);
     }
     public Posting() {
         this("", 0.0, "€");
@@ -139,6 +155,7 @@ class Posting implements Parcelable {
         this.account = in.readString();
         this.amount = in.readDouble();
         this.currency = in.readString();
+        this.currencyPosition = in.readByte()!=0;
     }
 
 
@@ -149,8 +166,12 @@ class Posting implements Parcelable {
     public String value() {
         if (amount == 0.0)
             return "";
-        else
-            return String.format("%.2f %s", amount, currency);
+        else {
+            if (currencyPosition)
+                return String.format("%.2f %s", amount, currency);
+            else
+                return String.format("%s %.2f", currency, amount);
+        }
     }
 
 
@@ -165,6 +186,7 @@ class Posting implements Parcelable {
         out.writeString(account);
         out.writeDouble(amount);
         out.writeString(currency);
+        out.writeByte((byte) (currencyPosition? 1 : 0));
     }
 
     public static final Parcelable.Creator<Posting> CREATOR =

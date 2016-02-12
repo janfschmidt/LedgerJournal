@@ -5,4 +5,9 @@
     <string name="preference_dateformat_default">yyyy/MM/dd</string>
     <string name="preference_currency_title">Currency</string>
     <string name="preference_currency_default">€</string>
+    <string name="currpos_off_text">in front</string>
+    <string name="currpos_on_text">behind</string>
+    <string name="currpos_off_summary">Currency is shown in front of amount</string>
+    <string name="currpos_on_summary">Currency is shown behind amount</string>
+    <string name="preference_currpos_title">Currency Position</string>
 </resources>
