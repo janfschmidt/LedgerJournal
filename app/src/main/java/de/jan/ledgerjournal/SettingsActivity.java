@@ -35,10 +35,19 @@ public class SettingsActivity extends AppCompatActivity {
             addPreferencesFromResource(R.xml.preferences);
             EditTextPreference path = (EditTextPreference) findPreference("exportpath");
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            path.setText( sharedPref.getString("exportpath", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/LedgerJournal") );
+            path.setText( sharedPref.getString("exportpath", defaultPath()) );
         }
     }
 
+
+    static public String defaultPath() {
+        String doc;
+        if (android.os.Build.VERSION.SDK_INT >= 19)
+            doc = Environment.DIRECTORY_DOCUMENTS;
+        else
+            doc = "Documents";
+        return Environment.getExternalStoragePublicDirectory(doc) + "/" + R.string.app_name;
+    }
 
 
 }

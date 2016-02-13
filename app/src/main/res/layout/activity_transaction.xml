@@ -24,12 +24,12 @@
             android:inputType="date"
             android:ems="10"
             android:id="@+id/inputDate"
-            android:hint="Date" />
+            android:hint="@string/layout_transaction_date" />
 
         <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Payee"
+            android:hint="@string/layout_transaction_payee"
             android:id="@+id/inputPayee" />
 
         <!--here posting_input is added programmatically-->

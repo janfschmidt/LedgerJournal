@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">LedgerJournal</string>
-    <string name="action_settings">Settings</string>
+    <string name="menu_main_settings">Settings</string>
+    <string name="menu_main_templates">Transaction Templates</string>
+
+    <string name="layout_transaction_date">Date</string>
+    <string name="layout_transaction_payee">Payee</string>
+    <string name="layout_posting_accounthint">Your:Account</string>
+
     <string name="preference_exportpath_title">Ledger File Export Directory</string>
     <string name="preference_exportpath_summary">Exported .led files are saved in this directory</string>
     <string name="preference_dateformat_title">Date Format</string>
@@ -14,4 +20,32 @@
     <string name="preference_currency_summary">New transactions use this currency</string>
     <string name="preference_delete_title">Delete after Export</string>
     <string name="preference_delete_summary">Transactions can be deleted automatically after export to avoid exporting them twice</string>
+
+    <string name="dialog_replacetemplate">Replace Template for Payee</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
+    <string name="dialog_addjournal">Add a new Journal</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_rename">Rename</string>
+    <string name="dialog_deletejournal">Really delete the Journal?</string>
+    <string name="dialog_deleteexported_1">Delete all</string>
+    <string name="dialog_deleteexported_2">transactions just exported from</string>
+
+    <string name="context_main_rename">Rename Journal</string>
+    <string name="context_main_delete">Delete Journal</string>
+    <string name="context_journal_edit">Edit Transaction</string>
+    <string name="context_journal_delete">Delete Transaction</string>
+    <string name="context_journal_template">Add to Templates</string>
+
+    <string name="toast_maxpostings">Maximum number of Postings reached.</string>
+    <string name="toast_addtemplate">Added Transaction to Templates.</string>
+    <string name="toast_exportfile">Wrote file</string>
+    <string name="share_subject">export</string>
+
+    <string name="db_templates_topfname">Templates</string>
+    <string name="db_templates_acc_cash">Expenses:Cash</string>
+    <string name="db_templates_acc_groceries">Expenses:Groceries</string>
+    <string name="db_templates_acc_giro">Assets:Checking</string>
+    <string name="db_templates_acc_gastro">Expenses:Gastronomy</string>
 </resources>

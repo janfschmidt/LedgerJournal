@@ -49,7 +49,7 @@ public class PostingInputLayout extends LinearLayout {
         accParams.gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
 
         account.setLayoutParams(accParams);
-        account.setHint("Your:Account");
+        account.setHint(R.string.layout_posting_accounthint);
         account.setSingleLine();
         account.setEllipsize(TextUtils.TruncateAt.START);
         //account.setHorizontallyScrolling(true);
@@ -60,7 +60,7 @@ public class PostingInputLayout extends LinearLayout {
         amount.setLayoutParams(amountParams);
         amount.setGravity(Gravity.RIGHT);
         amount.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
-        amount.setHint("0.00");
+        amount.setHint(formatAmount(0.0));
 
         currency = new TextView(context);
         currParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -96,12 +96,15 @@ public class PostingInputLayout extends LinearLayout {
     public void setPosting(Posting p) {
         account.setText(p.account);
         if (p.amount != 0.0) {
-            DecimalFormat format = new DecimalFormat("0.00");
-            String formattedText = format.format(p.amount);
-            amount.setText(formattedText);
+            amount.setText(formatAmount(p.amount));
         }
         currency.setText(p.currency);
         setCurrencyPosition(p.currencyPosition);
+    }
+
+    protected String formatAmount(double amount) {
+        DecimalFormat format = new DecimalFormat("0.00");
+        return format.format(amount);
     }
 
     private void addViews(boolean currpos) {

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -108,24 +109,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        if (v.getId() == R.id.topfListView) {
-            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-            menu.setHeaderTitle( topfList.get(info.position) );
-
-            menu.add("Rename Journal");
-            menu.add("Delete Journal");
-        }
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_main, menu);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        menu.setHeaderTitle( topfList.get(info.position) );
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-        if (item.getTitle()=="Rename Journal") {
+        if (item.getItemId() == R.id.context_main_rename) {
             Log.d("MainActivity", "Context menu: rename selected");
             editTopfDialog(info.position);
         }
-        else if (item.getTitle()=="Delete Journal") {
+        else if (item.getItemId() == R.id.context_main_delete) {
             Log.d("MainActivity", "Context menu: delete selected");
             deleteDialog(info.position);
         }
@@ -138,13 +136,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     protected void addTopfDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        //alert.setTitle("Hello!");
-        alert.setMessage("Add a new Journal:");
+        alert.setTitle(R.string.dialog_addjournal);
         final EditText input = new EditText(this);
         alert.setView(input);
 
         // Make an "OK" button to save the Text to topfList
-        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        alert.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String topfname = input.getText().toString();
                 dataSource.addTopf(topfname);
@@ -154,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
 
         // Make a "Cancel" button that simply dismisses the alert
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }
         });
@@ -165,13 +162,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void editTopfDialog(int index) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         final String oldName =  topfList.get(index);
-        alert.setTitle("Rename "+ oldName);
+        alert.setTitle( getResources().getString(R.string.dialog_rename) +" "+ oldName );
         final EditText input = new EditText(this);
         input.setText(oldName);
         alert.setView(input);
 
         // Make an "OK" button to save the Text to topfList
-        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        alert.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 String newName = input.getText().toString();
                 dataSource.editTopf(oldName, newName);
@@ -180,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
 
         // Make a "Cancel" button that simply dismisses the alert
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }
         });
@@ -191,13 +188,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void deleteDialog(final int index) {
         final String topfname = topfList.get(index);
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage("Really delete the Journal " + topfname + "?");
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alert.setTitle(topfname);
+        alert.setMessage(R.string.dialog_deletejournal);
+        alert.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 deleteTopf(index);
             }
         });
-        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }
         });

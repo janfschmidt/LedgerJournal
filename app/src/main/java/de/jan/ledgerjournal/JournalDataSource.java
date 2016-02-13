@@ -46,9 +46,11 @@ public class JournalDataSource extends MyDataSource {
     private SQLiteDatabase db;
     private JournalDbHelper dbHelper;
     protected String logTag = this.getClass().getSimpleName();
+    protected Context context;
 
 
     public JournalDataSource(Context context) {
+        this.context = context; //only used to access Resources
         dbHelper = new JournalDbHelper(context);
     }
 
@@ -226,7 +228,7 @@ public class JournalDataSource extends MyDataSource {
     }
     public void addTemplateTopf() {
         ContentValues cv = new ContentValues();
-        cv.put(JournalDbHelper.COLUMN_TOPFNAME, "Templates");
+        cv.put(JournalDbHelper.COLUMN_TOPFNAME, R.string.db_templates_topfname);
         cv.put(JournalDbHelper.COLUMN_TOPFID, JournalDbHelper.TEMPLATE_TOPFID);
 
         long insertid = db.insert(JournalDbHelper.TABLE_TOEPFE, null, cv);
@@ -330,13 +332,13 @@ public class JournalDataSource extends MyDataSource {
     }
 
 
-
     // add default templates
+    protected String fromResource(int r) {return context.getResources().getString(r);}
     protected void addDefaultTemplates() {
         addTemplateTopf();
-        addTemplate("Edeka", "Ausgaben:Bargeld", "Ausgaben:Lebensmittel");
-        addTemplate("Rewe", "Ausgaben:Bargeld", "Ausgaben:Lebensmittel");
-        addTemplate("Grieche", "Ausgaben:Bargeld", "Ausgaben:Ausgehen:Gastronomie");
+        addTemplate("Edeka", fromResource(R.string.db_templates_acc_cash), fromResource(R.string.db_templates_acc_groceries));
+        addTemplate("Rewe", fromResource(R.string.db_templates_acc_giro), fromResource(R.string.db_templates_acc_groceries));
+        addTemplate("Grieche", fromResource(R.string.db_templates_acc_cash), fromResource(R.string.db_templates_acc_gastro));
     }
 
 }

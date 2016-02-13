@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -144,7 +143,6 @@ public class TransactionActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // menu_item_share not called, because it is handled by ShareActionProvider
             case R.id.menu_item_ok:
                 onOkClick();
                 return true;
@@ -154,7 +152,7 @@ public class TransactionActivity extends AppCompatActivity {
     }
 
 
-    // OK Button
+    // OK/Save Button
     public void onOkClick() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         Transaction t = new Transaction();
@@ -194,7 +192,7 @@ public class TransactionActivity extends AppCompatActivity {
             inputPostings.get(inputPostings.size()-1).setAutoCompleteAccounts(accounts);
         }
         else {
-            Toast toast = Toast.makeText(this, "Maximum number of Postings reached.", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, R.string.toast_maxpostings, Toast.LENGTH_SHORT);
             toast.show();
         }
     }
@@ -240,14 +238,14 @@ public class TransactionActivity extends AppCompatActivity {
 
     protected void replaceTemplateDialog(final Transaction t) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage("Replace Template for Payee " + t.payee + "?");
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alert.setMessage(R.string.dialog_replacetemplate + " " + t.payee + "?");
+        alert.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dataSource.replaceTemplate(t);
                 finish();
             }
         });
-        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 finish();
             }

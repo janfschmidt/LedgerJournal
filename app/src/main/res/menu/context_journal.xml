@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/context_journal_edit"
+        android:title="@string/context_journal_edit" />
+    <item
+        android:id="@+id/context_journal_delete"
+        android:title="@string/context_journal_delete" />
+    <item
+        android:id="@+id/context_journal_template"
+        android:title="@string/context_journal_template" />
+</menu>

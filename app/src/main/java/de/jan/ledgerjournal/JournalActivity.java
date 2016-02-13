@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
@@ -17,6 +16,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +39,6 @@ public class JournalActivity extends AppCompatActivity {
 
     JournalDataSource dataSource;
     SharedPreferences sharedPref;
-    static final String defaultPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/LedgerJournal";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,9 +121,9 @@ public class JournalActivity extends AppCompatActivity {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/*");
 
-        File journalFile = new File(journal.exportFilePath( sharedPref.getString("exportpath", defaultPath) ));
+        File journalFile = new File(journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath()) ));
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(journalFile));
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "LedgerJournal export");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name +" "+ getResources().getString(R.string.share_subject));
         //startActivity(Intent.createChooser(shareIntent, "Share Ledger file using")); //ich möchte keinen "Chooser" sobald ich JournalActivity öffne!
         return shareIntent;
     }
@@ -155,10 +154,10 @@ public class JournalActivity extends AppCompatActivity {
             Transaction t = journal.get(info.position);
             menu.setHeaderTitle(t.date + "\t" + t.payee);
 
-            menu.add("Edit Transaction");
-            menu.add("Delete Transaction");
-            if (topfId != JournalDbHelper.TEMPLATE_TOPFID)
-                menu.add("Add to Templates");
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.context_journal, menu);
+            if (topfId == JournalDbHelper.TEMPLATE_TOPFID)
+                menu.removeItem(R.id.context_journal_template);
         }
     }
 
@@ -166,15 +165,15 @@ public class JournalActivity extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 
-        if (item.getTitle()=="Edit Transaction") {
+        if (item.getItemId() == R.id.context_journal_edit) {
             Log.d("JournalActivity", "Context menu: edit selected");
             editJournalTransaction(info.position);
         }
-        else if (item.getTitle()=="Delete Transaction") {
+        else if (item.getItemId() == R.id.context_journal_delete) {
             Log.d("JournalActivity", "Context menu: delete selected");
             deleteJournalTransaction(info.position);
         }
-        else if (item.getTitle()=="Add to Templates") {
+        else if (item.getItemId() == R.id.context_journal_template) {
             addToTemplates( journal.get(info.position) );
         }
         else {
@@ -211,7 +210,7 @@ public class JournalActivity extends AppCompatActivity {
 
     private void addToTemplates(Transaction t) {
         if (dataSource.addTemplate(t)) {
-            Toast toast = Toast.makeText(this, "Added Transaction to Templates.", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(this, R.string.toast_addtemplate, Toast.LENGTH_SHORT);
             toast.show();
         }
         else {
@@ -221,23 +220,23 @@ public class JournalActivity extends AppCompatActivity {
 
 
     private void saveToFile() {
-        journal.export( sharedPref.getString("exportpath", defaultPath) );
-        Toast toast = Toast.makeText(this, "Wrote file "+journal.exportFilePath( sharedPref.getString("exportpath", defaultPath) ), Toast.LENGTH_LONG);
+        journal.export( sharedPref.getString("exportpath", SettingsActivity.defaultPath()) );
+        Toast toast = Toast.makeText(this, getResources().getString(R.string.toast_exportfile) +" "+ journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath()) ), Toast.LENGTH_LONG);
         toast.show();
         deleteExported();
     }
 
     protected void replaceTemplateDialog(final Transaction t) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage("Replace Template for Payee " + t.payee + "?");
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alert.setMessage(getResources().getString(R.string.dialog_replacetemplate)+" " + t.payee + "?");
+        alert.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dataSource.replaceTemplate(t);
                 Toast toast = Toast.makeText(getApplicationContext(), "Replaced Template for " + t.payee, Toast.LENGTH_SHORT);
                 toast.show();
             }
         });
-        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }
         });
@@ -258,13 +257,13 @@ public class JournalActivity extends AppCompatActivity {
 
     protected void deleteExportedDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage("Delete all "+journal.size()+" Transactions just exported from " + journal.name + "?");
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        alert.setMessage(getResources().getString(R.string.dialog_deleteexported_1)+" "+journal.size()+" "+ getResources().getString(R.string.dialog_deleteexported_2)+" "+ journal.name + "?");
+        alert.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 clearJournal();
             }
         });
-        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
             }
         });
