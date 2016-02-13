@@ -45,4 +45,6 @@
     <string name="preference_delete_entries_always">exportierte Transaktionen immer automatisch löschen</string>
     <string name="preference_delete_entries_ask">bei jedem Export nachfragen</string>
     <string name="preference_delete_entries_never">Transaktionen niemals löschen</string>
+    <string name="preference_category_export">Journal Export</string>
+    <string name="preference_category_input">Format der Transaktionen</string>
 </resources>

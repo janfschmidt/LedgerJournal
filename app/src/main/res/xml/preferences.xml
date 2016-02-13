@@ -3,25 +3,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditTextPreference
-        android:title="@string/preference_dateformat_title"
-        android:key="dateformat"
-        android:defaultValue="@string/preference_dateformat_default"
-        android:summary="@string/preference_dateformat_summary"
-        android:inputType="text" />
-    <EditTextPreference
-        android:title="@string/preference_currency_title"
-        android:key="currency"
-        android:defaultValue="@string/preference_currency_default"
-        android:summary="@string/preference_currency_summary"
-        android:inputType="text" />
-    <SwitchPreference
-        android:title="@string/preference_currpos_title"
-        android:key="currpos"
-        android:summaryOff="@string/preference_currpos_off_summary"
-        android:summaryOn="@string/preference_currpos_on_summary"
-        android:defaultValue="true" />
-    />
+    <PreferenceCategory android:title="@string/preference_category_input">
+        <EditTextPreference
+            android:title="@string/preference_dateformat_title"
+            android:key="dateformat"
+            android:defaultValue="@string/preference_dateformat_default"
+            android:summary="@string/preference_dateformat_summary"
+            android:inputType="text" />
+        <EditTextPreference
+            android:title="@string/preference_currency_title"
+            android:key="currency"
+            android:defaultValue="@string/preference_currency_default"
+            android:summary="@string/preference_currency_summary"
+            android:inputType="text" />
+        <SwitchPreference
+            android:title="@string/preference_currpos_title"
+            android:key="currpos"
+            android:summaryOff="@string/preference_currpos_off_summary"
+            android:summaryOn="@string/preference_currpos_on_summary"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/preference_category_export">
     <EditTextPreference
         android:title="@string/preference_exportpath_title"
         android:key="exportpath"
@@ -33,6 +36,6 @@
         android:entries="@array/preference_delete_entries"
         android:entryValues="@array/preference_delete_entryvalues"
         android:summary="@string/preference_delete_summary" />
-
+    </PreferenceCategory>
 
 </PreferenceScreen>

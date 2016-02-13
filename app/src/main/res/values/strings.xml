@@ -51,4 +51,6 @@
     <string name="db_templates_acc_groceries">Expenses:Groceries</string>
     <string name="db_templates_acc_giro">Assets:Checking</string>
     <string name="db_templates_acc_gastro">Expenses:Gastronomy</string>
+    <string name="preference_category_input">Transaction Input</string>
+    <string name="preference_category_export">Journal Export</string>
 </resources>
