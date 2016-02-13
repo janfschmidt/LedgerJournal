@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -131,8 +133,29 @@ public class TransactionActivity extends AppCompatActivity {
     }
 
 
+
+    // menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate menu resource file.
+        getMenuInflater().inflate(R.menu.menu_transaction, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // menu_item_share not called, because it is handled by ShareActionProvider
+            case R.id.menu_item_ok:
+                onOkClick();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
     // OK Button
-    public void onOkClick(View v) {
+    public void onOkClick() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         Transaction t = new Transaction();
 

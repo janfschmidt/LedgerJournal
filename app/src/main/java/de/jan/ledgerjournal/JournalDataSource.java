@@ -338,5 +338,5 @@ public class JournalDataSource extends MyDataSource {
         addTemplate("Rewe", "Ausgaben:Bargeld", "Ausgaben:Lebensmittel");
         addTemplate("Grieche", "Ausgaben:Bargeld", "Ausgaben:Ausgehen:Gastronomie");
     }
-    
+
 }

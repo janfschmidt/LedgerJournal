@@ -54,14 +54,14 @@
             android:longClickable="false">
         </Button>
 
-        <Button
+       <!-- <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Ok"
             android:id="@+id/button"
             android:onClick="onOkClick"
             android:layout_alignParentRight="true">
-        </Button>
+        </Button>-->
 
     </RelativeLayout>
 </RelativeLayout>
