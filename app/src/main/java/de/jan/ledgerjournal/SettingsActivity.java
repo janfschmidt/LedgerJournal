@@ -31,6 +31,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.preferences);
+            // Set Export Path default
             EditTextPreference path = (EditTextPreference) findPreference("exportpath");
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             path.setText( sharedPref.getString("exportpath", defaultPath(getActivity())) );

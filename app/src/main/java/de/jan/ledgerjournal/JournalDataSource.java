@@ -224,7 +224,7 @@ public class JournalDataSource extends MyDataSource {
     }
     public void addTemplateTopf() {
         ContentValues cv = new ContentValues();
-        cv.put(JournalDbHelper.COLUMN_TOPFNAME, R.string.db_templates_topfname);
+        cv.put(JournalDbHelper.COLUMN_TOPFNAME,fromResource(R.string.db_templates_topfname));
         cv.put(JournalDbHelper.COLUMN_TOPFID, JournalDbHelper.TEMPLATE_TOPFID);
 
         long insertid = db.insert(JournalDbHelper.TABLE_TOEPFE, null, cv);

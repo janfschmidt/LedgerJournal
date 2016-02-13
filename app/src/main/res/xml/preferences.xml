@@ -21,6 +21,8 @@
             android:key="currpos"
             android:summaryOff="@string/preference_currpos_off_summary"
             android:summaryOn="@string/preference_currpos_on_summary"
+            android:textOn=""
+            android:textOff=""
             android:defaultValue="true" />
     </PreferenceCategory>
 
@@ -35,6 +37,7 @@
         android:key="delete"
         android:entries="@array/preference_delete_entries"
         android:entryValues="@array/preference_delete_entryvalues"
+        android:defaultValue="never"
         android:summary="@string/preference_delete_summary" />
     </PreferenceCategory>
 
