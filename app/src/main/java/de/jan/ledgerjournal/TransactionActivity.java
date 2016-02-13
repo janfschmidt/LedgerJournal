@@ -1,5 +1,7 @@
 package de.jan.ledgerjournal;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
@@ -147,18 +149,19 @@ public class TransactionActivity extends AppCompatActivity {
             t.setDatabaseID(editme.getDatabaseID());
             t.currencyPosition = editme.currencyPosition;
             dataSource.editTransaction(t);
+            finish();
         }
         else {
             if (topfId == JournalDbHelper.TEMPLATE_TOPFID) {
                 if (!dataSource.addTemplate(t))
-                    dataSource.replaceTemplate(t);
+                    replaceTemplateDialog(t);
             }
             else {
                 t.currencyPosition = sharedPref.getBoolean("currpos", true);
                 dataSource.addTransaction(t, topfId);
+                finish();
             }
         }
-        finish();
     }
 
     // + Button (add Posting input line)
@@ -210,4 +213,22 @@ public class TransactionActivity extends AppCompatActivity {
         }
     }
     protected void insertTemplate(String payee) {insertTemplate( dataSource.getTemplate(payee) );}
+
+
+    protected void replaceTemplateDialog(final Transaction t) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Replace Template for Payee " + t.payee + "?");
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dataSource.replaceTemplate(t);
+                finish();
+            }
+        });
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                finish();
+            }
+        });
+        alert.show();
+    }
 }

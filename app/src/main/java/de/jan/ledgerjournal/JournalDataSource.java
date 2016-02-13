@@ -1,10 +1,13 @@
 package de.jan.ledgerjournal;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -327,6 +330,7 @@ public class JournalDataSource extends MyDataSource {
     }
 
 
+
     // add default templates
     protected void addDefaultTemplates() {
         addTemplateTopf();
@@ -334,4 +338,5 @@ public class JournalDataSource extends MyDataSource {
         addTemplate("Rewe", "Ausgaben:Bargeld", "Ausgaben:Lebensmittel");
         addTemplate("Grieche", "Ausgaben:Bargeld", "Ausgaben:Ausgehen:Gastronomie");
     }
+    
 }
