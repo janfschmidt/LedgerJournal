@@ -1,6 +1,10 @@
 package de.jan.ledgerjournal;
 
+import android.content.SharedPreferences;
+import android.os.Environment;
+import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -29,6 +33,9 @@ public class SettingsActivity extends AppCompatActivity {
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.preferences);
+            EditTextPreference path = (EditTextPreference) findPreference("exportpath");
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            path.setText( sharedPref.getString("exportpath", Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/LedgerJournal") );
         }
     }
 

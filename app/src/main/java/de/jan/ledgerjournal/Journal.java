@@ -26,25 +26,25 @@ public class Journal {
     public Journal() {setName("unknown");}
     public Journal(String name) {setName(name);}
 
+    public int size() {return list.size();}
     public void setName(String name) {this.name = name;}
 
     public void add(Transaction t) {list.add(t);}
     public void add(ArrayList<Transaction> tl) {list.addAll(tl);}
     public void remove(int index) {list.remove(index);}
+    public void clear() {list.clear();}
     public Transaction get(int index) {return list.get(index);}
-
     public void set(ArrayList<Transaction> tl) {list.clear(); add(tl);}
 
-    public String exportDir() {return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/LedgerJournal";}
     public String exportFilename() {return name + "_" + dateFilename.format(c.getTime()) + ".led";}
-    public String exportFilePath() {return exportDir() + "/" + exportFilename();}
+    public String exportFilePath(String exportDir) {return exportDir + "/" + exportFilename();}
 
 
     // export journal to text file
-    public void export() {
+    public void export(String exportDir) {
         String storageState = Environment.getExternalStorageState();
         if (storageState.equals(Environment.MEDIA_MOUNTED)) {
-                File dir = new File( exportDir() );
+                File dir = new File( exportDir );
                 if (!dir.exists()) {
                     dir.mkdirs();
                 }
@@ -59,7 +59,7 @@ public class Journal {
 
                 writer.flush();
                 writer.close();
-                Log.d("Journal.export", "Wrote file " + exportFilePath());
+                Log.d("Journal.export", "Wrote file " + exportFilePath(exportDir));
             } catch (IOException e) {
                 e.printStackTrace();
             }

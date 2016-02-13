@@ -119,7 +119,7 @@ public class JournalDataSource extends MyDataSource {
         cv.put(JournalDbHelper.COLUMN_DATE, t.date);
         cv.put(JournalDbHelper.COLUMN_PAYEE, t.payee);
         cv.put(JournalDbHelper.COLUMN_CURRENCY, t.currency);
-        cv.put(JournalDbHelper.COLUMN_CURRENCYPOSITION, (t.currencyPosition)? 1 : 0);
+        cv.put(JournalDbHelper.COLUMN_CURRENCYPOSITION, (t.currencyPosition) ? 1 : 0);
         for (int i=0; i<t.numPostings(); i++) {
             cv.put(JournalDbHelper.columnAcc(i), t.posting(i).account);
             cv.put(JournalDbHelper.columnVal(i), t.posting(i).amount);
@@ -156,15 +156,21 @@ public class JournalDataSource extends MyDataSource {
     }
 
 
-    // delete a complete Journal/Topf by id
-    public void deleteTopf(int topfid) {
+    // delete all Transactions from a Journal/Topf given by id
+    public void clearTopf(int topfid) {
         int num = db.delete(JournalDbHelper.TABLE_JOURNAL, JournalDbHelper.COLUMN_TOPFID + "=" + topfid, null);
-        db.delete(JournalDbHelper.TABLE_TOEPFE, JournalDbHelper.COLUMN_TOPFID + "=" + topfid, null);
 
         if (num == 0)
             throw new RuntimeException("deleteTopf(): no Transaction with topfid "+topfid+" found.");
 
-        Log.d(logTag, "deleted Journal with Topfid " + topfid + ", " + num + " Transactions deleted.");
+        Log.d(logTag, "cleared Journal with Topfid " + topfid + ", " + num + " Transactions deleted.");
+    }
+
+    // delete a complete Journal/Topf by id
+    public void deleteTopf(int topfid) {
+        clearTopf(topfid);
+        db.delete(JournalDbHelper.TABLE_TOEPFE, JournalDbHelper.COLUMN_TOPFID + "=" + topfid, null);
+        Log.d(logTag, "deleted Journal with Topfid " + topfid + ".");
     }
 
 

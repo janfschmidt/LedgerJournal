@@ -4,7 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,10 +35,11 @@ public class JournalActivity extends AppCompatActivity {
     Journal journal;
     ListView journalListView;
     TransactionsAdapter journalAdapter;
-
     int topfId;
-    JournalDataSource dataSource;
 
+    JournalDataSource dataSource;
+    SharedPreferences sharedPref;
+    static final String defaultPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/LedgerJournal";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class JournalActivity extends AppCompatActivity {
 
 
         dataSource = new JournalDataSource(this);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         Bundle bundle = getIntent().getExtras();
         topfId = bundle.getInt("topfId");
@@ -117,7 +122,7 @@ public class JournalActivity extends AppCompatActivity {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/*");
 
-        File journalFile = new File(journal.exportFilePath());
+        File journalFile = new File(journal.exportFilePath( sharedPref.getString("exportpath", defaultPath) ));
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(journalFile));
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, "LedgerJournal export");
         //startActivity(Intent.createChooser(shareIntent, "Share Ledger file using")); //ich möchte keinen "Chooser" sobald ich JournalActivity öffne!
@@ -191,6 +196,12 @@ public class JournalActivity extends AppCompatActivity {
         journalAdapter.notifyDataSetChanged();
     }
 
+    private void clearJournal() {
+        dataSource.clearTopf(topfId);
+        journal.clear();
+        journalAdapter.notifyDataSetChanged();
+    }
+
     private void editJournalTransaction(int position) {
         Intent i = new Intent(JournalActivity.this, TransactionActivity.class);
         i.putExtra("topfId", topfId);
@@ -210,9 +221,10 @@ public class JournalActivity extends AppCompatActivity {
 
 
     private void saveToFile() {
-        journal.export();
-        Toast toast = Toast.makeText(this, "Wrote file "+journal.exportFilePath(), Toast.LENGTH_LONG);
+        journal.export( sharedPref.getString("exportpath", defaultPath) );
+        Toast toast = Toast.makeText(this, "Wrote file "+journal.exportFilePath( sharedPref.getString("exportpath", defaultPath) ), Toast.LENGTH_LONG);
         toast.show();
+        deleteExported();
     }
 
     protected void replaceTemplateDialog(final Transaction t) {
@@ -223,6 +235,33 @@ public class JournalActivity extends AppCompatActivity {
                 dataSource.replaceTemplate(t);
                 Toast toast = Toast.makeText(getApplicationContext(), "Replaced Template for " + t.payee, Toast.LENGTH_SHORT);
                 toast.show();
+            }
+        });
+        alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+            }
+        });
+        alert.show();
+    }
+
+    private void deleteExported() {
+        String delete = sharedPref.getString("delete", "never");
+        Log.d("JournalActivity", "deleteExported() called: Preference is " + delete);
+        if (delete.equals("always")) {
+            clearJournal();
+        }
+        else if (delete.equals("ask")) {
+            deleteExportedDialog();
+        }
+        // else: nothing is deleted.
+    }
+
+    protected void deleteExportedDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setMessage("Delete all "+journal.size()+" Transactions just exported from " + journal.name + "?");
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                clearJournal();
             }
         });
         alert.setNegativeButton("No", new DialogInterface.OnClickListener() {

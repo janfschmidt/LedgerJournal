@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="preference_delete_entries">
+        <item>Never delete transactions</item>
+        <item>Ask me after every export</item>
+        <item>Always delete exported transactions automatically</item>
+    </string-array>
+    <string-array name="preference_delete_entryvalues">
+        <item>never</item>
+        <item>ask</item>
+        <item>always</item>
+    </string-array>
+</resources>
