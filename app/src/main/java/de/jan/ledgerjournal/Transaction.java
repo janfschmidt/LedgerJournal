@@ -1,24 +1,17 @@
 package de.jan.ledgerjournal;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
 
 public class Transaction implements Parcelable {
     public String date;
     public String payee;
     public String currency;
     public boolean currencyPosition;
-    private ArrayList<Posting> postings = new ArrayList<Posting>();
+    private ArrayList<Posting> postings = new ArrayList<>();
     private int databaseID; // id to identify Transaction in Journal database
 
     public Transaction(String date, String payee, String currency, boolean currencyPosition){

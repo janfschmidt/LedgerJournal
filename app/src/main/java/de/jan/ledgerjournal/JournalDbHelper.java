@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -100,7 +99,7 @@ public class JournalDbHelper extends SQLiteOpenHelper {
 
     // create array with database column names, used by JournalDataSource for Cursor
     public static String[] columns_JOURNAL() {
-        ArrayList<String> l = new ArrayList<String>();
+        ArrayList<String> l = new ArrayList<>();
         l.add(COLUMN_ID);
         l.add(COLUMN_DATE);
         l.add(COLUMN_PAYEE);

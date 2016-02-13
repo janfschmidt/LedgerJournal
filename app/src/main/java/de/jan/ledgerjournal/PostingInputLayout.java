@@ -7,12 +7,10 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -89,8 +87,7 @@ public class PostingInputLayout extends LinearLayout {
     public String getCurrency() {return currency.getText().toString();}
 
     public Posting getPosting() {
-        Posting p = new Posting( getAccount(), getAmount(), getCurrency() );
-        return p;
+        return new Posting( getAccount(), getAmount(), getCurrency() );
     }
 
     public void setPosting(Posting p) {
@@ -132,8 +129,7 @@ public class PostingInputLayout extends LinearLayout {
         double res = 0.0;
         try {
             res = Double.parseDouble(s);
-        } catch (NullPointerException e) {
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
         }
         return res;
     }

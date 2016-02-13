@@ -2,7 +2,6 @@ package de.jan.ledgerjournal;
 
 import android.content.Context;
 import android.view.Gravity;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 

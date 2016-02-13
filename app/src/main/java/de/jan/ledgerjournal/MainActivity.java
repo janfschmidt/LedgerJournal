@@ -3,6 +3,8 @@ package de.jan.ledgerjournal;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -91,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             i.putExtra("topfId", JournalDbHelper.TEMPLATE_TOPFID);
             startActivity(i);
         }
+        else if (id == R.id.action_about) {
+            aboutDialog();
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -112,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_main, menu);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        menu.setHeaderTitle( topfList.get(info.position) );
+        menu.setHeaderTitle(topfList.get(info.position));
     }
 
     @Override
@@ -199,6 +204,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             public void onClick(DialogInterface dialog, int whichButton) {
             }
         });
+        alert.show();
+    }
+
+    protected void aboutDialog() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(R.string.app_name);
+        try {
+            PackageInfo p = getPackageManager().getPackageInfo(getPackageName(),0);
+            alert.setMessage("Version "+ p.versionName + " (Build "+p.versionCode+")");
+        } catch (PackageManager.NameNotFoundException e) {
+            //should never be called?
+        }
         alert.show();
     }
 

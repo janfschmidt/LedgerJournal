@@ -47,4 +47,5 @@
     <string name="preference_delete_entries_never">Transaktionen niemals löschen</string>
     <string name="preference_category_export">Journal Export</string>
     <string name="preference_category_input">Format der Transaktionen</string>
+    <string name="menu_main_about">Über</string>
 </resources>

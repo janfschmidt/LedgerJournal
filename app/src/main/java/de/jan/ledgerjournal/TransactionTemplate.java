@@ -1,13 +1,11 @@
 
 package de.jan.ledgerjournal;
 
-import android.provider.ContactsContract;
-
 import java.util.ArrayList;
 
 
 /**
- * Created by jan on 06.02.2016.
+ * Created by jan on 06.02.2016. Template version of Transaction
  */
 
 public class TransactionTemplate {
@@ -17,9 +15,9 @@ public class TransactionTemplate {
 
     public TransactionTemplate(String payee, String account1, String account2) {
         this.payee = payee;
-        if (account1 != "")
+        if (account1.equals(""))
             accounts.add(account1);
-        if (account2 != "")
+        if (account2.equals(""))
             accounts.add(account2);
         databaseID = -1;
     }

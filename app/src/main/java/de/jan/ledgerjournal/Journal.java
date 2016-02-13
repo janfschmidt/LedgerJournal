@@ -2,10 +2,8 @@ package de.jan.ledgerjournal;
 
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -51,7 +49,7 @@ public class Journal {
             try {
                 FileWriter writer = new FileWriter( new File(dir, exportFilename()) );
 
-                writer.append("# LedgerJournal export at " + dateComment.format(c.getTime()) + "\n");
+                writer.append("# LedgerJournal export at ").append(dateComment.format(c.getTime())).append("\n");
 
                 for (Transaction t : list) {
                     writer.append(t.print());
