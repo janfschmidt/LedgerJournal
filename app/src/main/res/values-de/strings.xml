@@ -48,4 +48,6 @@
     <string name="preference_category_export">Journal Export</string>
     <string name="preference_category_input">Format der Transaktionen</string>
     <string name="menu_main_about">Über</string>
+    <string name="layout_settings_title">LedgerJournal Einstellungen</string>
+    <string name="toast_replacetemplate">Vorlage ersetzt für</string>
 </resources>

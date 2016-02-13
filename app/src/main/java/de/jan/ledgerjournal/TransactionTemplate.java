@@ -15,9 +15,9 @@ public class TransactionTemplate {
 
     public TransactionTemplate(String payee, String account1, String account2) {
         this.payee = payee;
-        if (account1.equals(""))
+        if (!account1.equals(""))
             accounts.add(account1);
-        if (account2.equals(""))
+        if (!account2.equals(""))
             accounts.add(account2);
         databaseID = -1;
     }

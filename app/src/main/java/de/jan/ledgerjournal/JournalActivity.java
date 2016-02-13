@@ -121,7 +121,7 @@ public class JournalActivity extends AppCompatActivity {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/*");
 
-        File journalFile = new File(journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath()) ));
+        File journalFile = new File(journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)) ));
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(journalFile));
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name +" "+ getResources().getString(R.string.share_subject));
         //startActivity(Intent.createChooser(shareIntent, "Share Ledger file using")); //ich möchte keinen "Chooser" sobald ich JournalActivity öffne!
@@ -220,8 +220,8 @@ public class JournalActivity extends AppCompatActivity {
 
 
     private void saveToFile() {
-        journal.export( sharedPref.getString("exportpath", SettingsActivity.defaultPath()) );
-        Toast toast = Toast.makeText(this, getResources().getString(R.string.toast_exportfile) +" "+ journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath()) ), Toast.LENGTH_LONG);
+        journal.export( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)) );
+        Toast toast = Toast.makeText(this, getResources().getString(R.string.toast_exportfile) +" "+ journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)) ), Toast.LENGTH_LONG);
         toast.show();
         deleteExported();
     }
@@ -232,7 +232,7 @@ public class JournalActivity extends AppCompatActivity {
         alert.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dataSource.replaceTemplate(t);
-                Toast toast = Toast.makeText(getApplicationContext(), "Replaced Template for " + t.payee, Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.toast_replacetemplate) +" "+ t.payee, Toast.LENGTH_SHORT);
                 toast.show();
             }
         });
