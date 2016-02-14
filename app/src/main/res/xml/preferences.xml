@@ -39,6 +39,14 @@
         android:entryValues="@array/preference_delete_entryvalues"
         android:defaultValue="never"
         android:summary="@string/preference_delete_summary" />
+        <EditTextPreference
+            android:title="@string/preference_exportwidth_title"
+            android:key="exportwidth"
+            android:summary="@string/preference_exportwidth_summary"
+            android:inputType="number"
+            android:numeric="integer"
+            android:maxLength="3"
+            android:defaultValue="35" />
     </PreferenceCategory>
 
 </PreferenceScreen>

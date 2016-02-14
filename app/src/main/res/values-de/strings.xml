@@ -50,4 +50,6 @@
     <string name="menu_main_about">Über</string>
     <string name="layout_settings_title">LedgerJournal Einstellungen</string>
     <string name="toast_replacetemplate">Vorlage ersetzt für</string>
+    <string name="preference_exportwidth_title">Zeilenbreite</string>
+    <string name="preference_exportwidth_summary">Zeilenbreite in .led Dateien. Hier wird die Anzahl der Zeichen für den Account eingestellt.</string>
 </resources>

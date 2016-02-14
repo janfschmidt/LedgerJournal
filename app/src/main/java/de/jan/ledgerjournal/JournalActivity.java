@@ -220,7 +220,7 @@ public class JournalActivity extends AppCompatActivity {
 
 
     private void saveToFile() {
-        journal.export( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)) );
+        journal.export( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)), Integer.parseInt(sharedPref.getString("exportwidth", "35")) );
         Toast toast = Toast.makeText(this, getResources().getString(R.string.toast_exportfile) +" "+ journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)) ), Toast.LENGTH_LONG);
         toast.show();
         if (topfId != JournalDbHelper.TEMPLATE_TOPFID) // deleting templates after export makes no sense

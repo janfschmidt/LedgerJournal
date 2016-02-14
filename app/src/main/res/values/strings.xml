@@ -56,4 +56,6 @@
     <string name="menu_main_about">About </string>
     <string name="layout_settings_title">LedgerJournal Settings</string>
     <string name="toast_replacetemplate">Replaced Template for</string>
+    <string name="preference_exportwidth_title">Line Width</string>
+    <string name="preference_exportwidth_summary">Set the width of lines in .led files. You set the number of characters for the account.</string>
 </resources>

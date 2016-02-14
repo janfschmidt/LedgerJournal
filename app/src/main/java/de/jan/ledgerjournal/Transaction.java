@@ -81,14 +81,15 @@ public class Transaction implements Parcelable {
             return databaseID;
     }
 
-    public String print() {
+    public String print(int width) {
         String s = date + " * " + payee + "\n";
         for (Posting p : postings) {
-            s += "\t" + p.print() + "\n";
+            s += "    " + p.print(width) + "\n";
         }
         s += "\n";
         return s;
     }
+    public String print() {return print(35);}
 
 
     // functions for Parcelable - used to send a Transaction between Activities via Intent.putExtra()
@@ -152,8 +153,8 @@ class Posting implements Parcelable {
     }
 
 
-    public String print() {
-        return String.format("%-40s %12s", account, value());
+    public String print(int width) {
+        return String.format("%-"+width+"s %12s", account, value());
     }
 
     public String value() {

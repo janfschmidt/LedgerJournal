@@ -39,7 +39,7 @@ public class Journal {
 
 
     // export journal to text file
-    public void export(String exportDir) {
+    public void export(String exportDir, int width) {
         String storageState = Environment.getExternalStorageState();
         if (storageState.equals(Environment.MEDIA_MOUNTED)) {
                 File dir = new File( exportDir );
@@ -52,7 +52,7 @@ public class Journal {
                 writer.append("# LedgerJournal export at ").append(dateComment.format(c.getTime())).append("\n");
 
                 for (Transaction t : list) {
-                    writer.append(t.print());
+                    writer.append(t.print(width));
                 }
 
                 writer.flush();
@@ -63,5 +63,6 @@ public class Journal {
             }
         }
     }
+    public void export(String exportDir) {export(exportDir, 35);}
 
 }
