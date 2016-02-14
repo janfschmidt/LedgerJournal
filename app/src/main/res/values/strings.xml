@@ -35,11 +35,11 @@
     <string name="dialog_deleteexported_1">Delete all</string>
     <string name="dialog_deleteexported_2">transactions just exported from</string>
 
-    <string name="context_main_rename">Rename Journal</string>
-    <string name="context_main_delete">Delete Journal</string>
-    <string name="context_journal_edit">Edit Transaction</string>
-    <string name="context_journal_delete">Delete Transaction</string>
-    <string name="context_journal_template">Add to Templates</string>
+    <string name="context_main_rename">rename Journal</string>
+    <string name="context_main_delete">delete Journal</string>
+    <string name="context_journal_edit">edit transaction</string>
+    <string name="context_journal_delete">delete transaction</string>
+    <string name="context_journal_template">add to templates</string>
 
     <string name="toast_maxpostings">Maximum number of Postings reached.</string>
     <string name="toast_addtemplate">Added Transaction to Templates.</string>
@@ -51,8 +51,8 @@
     <string name="db_templates_acc_groceries">Expenses:Groceries</string>
     <string name="db_templates_acc_giro">Assets:Checking</string>
     <string name="db_templates_acc_gastro">Expenses:Gastronomy</string>
-    <string name="preference_category_input">Transaction Input</string>
-    <string name="preference_category_export">Journal Export</string>
+    <string name="preference_category_input">Input Settings</string>
+    <string name="preference_category_export">Export Settings</string>
     <string name="menu_main_about">About </string>
     <string name="layout_settings_title">LedgerJournal Settings</string>
     <string name="toast_replacetemplate">Replaced Template for</string>

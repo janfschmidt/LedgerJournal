@@ -174,7 +174,9 @@ public class TransactionActivity extends AppCompatActivity {
         }
         else {
             if (topfId == JournalDbHelper.TEMPLATE_TOPFID) {
-                if (!dataSource.addTemplate(t))
+                if (dataSource.addTemplate(t))
+                    finish();
+                else
                     replaceTemplateDialog(t);
             }
             else {
@@ -238,7 +240,7 @@ public class TransactionActivity extends AppCompatActivity {
 
     protected void replaceTemplateDialog(final Transaction t) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage(R.string.dialog_replacetemplate + " " + t.payee + "?");
+        alert.setMessage(getString(R.string.dialog_replacetemplate) + " " + t.payee + "?");
         alert.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dataSource.replaceTemplate(t);

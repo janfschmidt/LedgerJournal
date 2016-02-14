@@ -3,7 +3,7 @@
     <string name="app_name">LedgerJournal</string>
     <string name="context_journal_delete">Transaktion löschen</string>
     <string name="context_journal_edit">Transaktion bearbeiten</string>
-    <string name="context_journal_template">Zu Vorlagen hinzufügen</string>
+    <string name="context_journal_template">zu Vorlagen hinzufügen</string>
     <string name="context_main_delete">Journal löschen</string>
     <string name="context_main_rename">Journal umbenennen</string>
     <string name="db_templates_acc_cash">Ausgaben:Bargeld</string>
@@ -45,8 +45,8 @@
     <string name="preference_delete_entries_always">exportierte Transaktionen immer automatisch löschen</string>
     <string name="preference_delete_entries_ask">bei jedem Export nachfragen</string>
     <string name="preference_delete_entries_never">Transaktionen niemals löschen</string>
-    <string name="preference_category_export">Journal Export</string>
-    <string name="preference_category_input">Format der Transaktionen</string>
+    <string name="preference_category_export">Exporteinstellungen</string>
+    <string name="preference_category_input">Eingabeeinstellungen</string>
     <string name="menu_main_about">Über</string>
     <string name="layout_settings_title">LedgerJournal Einstellungen</string>
     <string name="toast_replacetemplate">Vorlage ersetzt für</string>

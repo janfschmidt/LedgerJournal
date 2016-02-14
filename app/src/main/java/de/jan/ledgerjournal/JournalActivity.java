@@ -223,12 +223,13 @@ public class JournalActivity extends AppCompatActivity {
         journal.export( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)) );
         Toast toast = Toast.makeText(this, getResources().getString(R.string.toast_exportfile) +" "+ journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)) ), Toast.LENGTH_LONG);
         toast.show();
-        deleteExported();
+        if (topfId != JournalDbHelper.TEMPLATE_TOPFID) // deleting templates after export makes no sense
+            deleteExported();
     }
 
     protected void replaceTemplateDialog(final Transaction t) {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage(getResources().getString(R.string.dialog_replacetemplate)+" " + t.payee + "?");
+        alert.setMessage(getString(R.string.dialog_replacetemplate)+" " + t.payee + "?");
         alert.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dataSource.replaceTemplate(t);
