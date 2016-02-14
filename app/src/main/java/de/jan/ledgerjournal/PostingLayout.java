@@ -1,6 +1,7 @@
 package de.jan.ledgerjournal;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,13 +27,16 @@ public class PostingLayout extends LinearLayout {
 
         account = new TextView(context);
         value = new TextView(context);
-        accParams = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+        accParams = new LayoutParams(0,LayoutParams.WRAP_CONTENT);
         valParams = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
         int margin = (int) getResources().getDimension(R.dimen.activity_horizontal_margin);
         accParams.setMargins(margin, 0, margin, 0);
+        accParams.gravity = Gravity.LEFT;
         accParams.weight = 1;
         account.setLayoutParams(accParams);
-        valParams.weight = 0;
+        account.setSingleLine();
+        account.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+        account.setHorizontallyScrolling(true);
         valParams.gravity = Gravity.RIGHT;
         value.setLayoutParams(valParams);
 
