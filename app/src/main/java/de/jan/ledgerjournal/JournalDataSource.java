@@ -138,6 +138,7 @@ public class JournalDataSource extends MyDataSource {
         cv.put(JournalDbHelper.COLUMN_CURRENCY, t.currency);
         cv.put(JournalDbHelper.COLUMN_CURRENCYPOSITION, (t.currencyPosition)? 1 : 0);
         for (int i=0; i<t.numPostings(); i++) {
+            Log.d(logTag, "editTransaction: " + i + ", " + t.posting(i).account + ", " + t.posting(i).amount);
             cv.put(JournalDbHelper.columnAcc(i), t.posting(i).account);
             cv.put(JournalDbHelper.columnVal(i), t.posting(i).amount);
         }

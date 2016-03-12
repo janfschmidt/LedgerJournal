@@ -13,9 +13,9 @@
     <string name="db_templates_topfname">Vorlagen</string>
     <string name="dialog_addjournal">Neues Journal anlegen</string>
     <string name="dialog_cancel">Abbrechen</string>
-    <string name="dialog_deleteexported_1">Alle</string>
-    <string name="dialog_deleteexported_2">gerade exportierten Transaktionen löschen</string>
-    <string name="dialog_deletejournal">Dieses Journal wirklich löschen</string>
+    <string name="dialog_deleteexported_1">Sollen alle </string>
+    <string name="dialog_deleteexported_2">gerade exportierten Transaktionen aus</string>
+    <string name="dialog_deletejournal">Dieses Journal wirklich löschen?</string>
     <string name="dialog_no">Nein</string>
     <string name="dialog_rename">Umbenennen</string>
     <string name="dialog_replacetemplate">Ersetze Vorlage für Payee</string>
@@ -30,7 +30,7 @@
     <string name="preference_currency_title">Währung</string>
     <string name="preference_currpos_off_summary">Währung kommt vor dem Betrag.</string>
     <string name="preference_currpos_on_summary">Währung kommt nach dem Betrag.</string>
-    <string name="preference_currpos_title">Währungsposition</string>
+    <string name="preference_currpos_title">Position der Währung</string>
     <string name="preference_dateformat_default">yyyy/MM/dd</string>
     <string name="preference_dateformat_summary">Neue Transaktionen nutzen dieses Datumsformat.</string>
     <string name="preference_dateformat_title">Datumsformat</string>
@@ -45,11 +45,13 @@
     <string name="preference_delete_entries_always">exportierte Transaktionen immer automatisch löschen</string>
     <string name="preference_delete_entries_ask">bei jedem Export nachfragen</string>
     <string name="preference_delete_entries_never">Transaktionen niemals löschen</string>
-    <string name="preference_category_export">Exporteinstellungen</string>
-    <string name="preference_category_input">Eingabeeinstellungen</string>
+    <string name="preference_category_export">Export</string>
+    <string name="preference_category_input">Eingabe</string>
     <string name="menu_main_about">Über</string>
     <string name="layout_settings_title">LedgerJournal Einstellungen</string>
     <string name="toast_replacetemplate">Vorlage ersetzt für</string>
     <string name="preference_exportwidth_title">Zeilenbreite</string>
     <string name="preference_exportwidth_summary">Zeilenbreite in .led Dateien. Hier wird die Anzahl der Zeichen für den Account eingestellt.</string>
+    <string name="dialog_deleteexported_3"> gelöscht werden?</string>
+    <string name="toast_numberFormatError">Betrag hat ungültiges Zahlenformat</string>
 </resources>

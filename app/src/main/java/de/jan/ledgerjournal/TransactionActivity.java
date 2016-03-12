@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -161,8 +162,9 @@ public class TransactionActivity extends AppCompatActivity {
         t.date = inputDate.getText().toString();
         t.payee = inputPayee.getText().toString();
         t.currency = inputPostings.get(0).getCurrency();
+        Posting p = new Posting();
         for (PostingInputLayout pil : inputPostings) {
-            t.addPosting( pil.getPosting() );
+            t.addPosting(pil.getPosting());
         }
 
         //write transaction to database
@@ -218,7 +220,10 @@ public class TransactionActivity extends AppCompatActivity {
             addPostingInputLine();
         }
         for (int i=0; i<t.numPostings(); i++) {
-            inputPostings.get(i).setPosting(t.posting(i));
+            PostingInputLayout pil = inputPostings.get(i);
+            pil.setPosting(t.posting(i));
+            inputPostings.set(i,pil);
+            //Log.d("TransactionActivity", "inputPostings "+i+": "+ t.posting(i).amount + "//" + pil.getAmount() +"//"+ inputPostings.get(i).getAmount());
         }
     }
 

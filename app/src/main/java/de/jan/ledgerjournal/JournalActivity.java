@@ -123,7 +123,7 @@ public class JournalActivity extends AppCompatActivity {
 
         File journalFile = new File(journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)) ));
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(journalFile));
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, R.string.app_name +" "+ getResources().getString(R.string.share_subject));
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name) +" "+ getResources().getString(R.string.share_subject));
         //startActivity(Intent.createChooser(shareIntent, "Share Ledger file using")); //ich möchte keinen "Chooser" sobald ich JournalActivity öffne!
         return shareIntent;
     }
@@ -258,7 +258,7 @@ public class JournalActivity extends AppCompatActivity {
 
     protected void deleteExportedDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage(getResources().getString(R.string.dialog_deleteexported_1)+" "+journal.size()+" "+ getResources().getString(R.string.dialog_deleteexported_2)+" "+ journal.name + "?");
+        alert.setMessage(getResources().getString(R.string.dialog_deleteexported_1)+" "+journal.size()+" "+ getResources().getString(R.string.dialog_deleteexported_2)+" "+ journal.name +  getResources().getString(R.string.dialog_deleteexported_3));
         alert.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 clearJournal();

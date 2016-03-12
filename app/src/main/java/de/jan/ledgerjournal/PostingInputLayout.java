@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.ArrayAdapter;
@@ -12,8 +13,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Created by jan on 23.01.2016.
@@ -33,6 +38,8 @@ public class PostingInputLayout extends LinearLayout {
     String[] accounts = new String[] {};
     ArrayAdapter<String> accountAdapter;
 
+    NumberFormat numberFormat = NumberFormat.getInstance();
+
     PostingInputLayout(Context context) {
         super(context);
         this.setOrientation(LinearLayout.HORIZONTAL);
@@ -50,6 +57,7 @@ public class PostingInputLayout extends LinearLayout {
         account.setHint(R.string.layout_posting_accounthint);
         account.setSingleLine();
         account.setEllipsize(TextUtils.TruncateAt.START);
+        account.setSelectAllOnFocus(true);
         //account.setHorizontallyScrolling(true);
 
         amount = new EditText(context);
@@ -58,6 +66,7 @@ public class PostingInputLayout extends LinearLayout {
         amount.setLayoutParams(amountParams);
         amount.setGravity(Gravity.RIGHT);
         amount.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
+        amount.setKeyListener(DigitsKeyListener.getInstance("-0123456789"+getDecimalSeparator()));
         amount.setHint(formatAmount(0.0));
 
         currency = new TextView(context);
@@ -97,6 +106,7 @@ public class PostingInputLayout extends LinearLayout {
         }
         currency.setText(p.currency);
         setCurrencyPosition(p.currencyPosition);
+        //Log.d("PostingInputLayout", "p="+p.amount + "/" + "editText="+amount.getText());
     }
 
     protected String formatAmount(double amount) {
@@ -118,19 +128,29 @@ public class PostingInputLayout extends LinearLayout {
     public void setCurrencyPosition(boolean currpos) {
         removeAllViews();
         addViews(currpos);
-        Log.d("PostingInputLayout", "currencyPosition set: " + currpos);
+        //Log.d("PostingInputLayout", "currencyPosition set: " + currpos);
     }
 
     public void setAccount(String acc) {
         account.setText(acc);
     }
 
-    private static double parseAmount(String s) {
+    private double parseAmount(String s) {
         double res = 0.0;
         try {
-            res = Double.parseDouble(s);
+            //NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
+            if (!s.equals(""))
+                res = numberFormat.parse(s).doubleValue();
         } catch (Exception e) {
+            Log.d("PostingInputLayout", "parseAmount Error: " + e.getMessage());
+            Toast toast = Toast.makeText(getContext(), getResources().getString(R.string.toast_numberFormatError) + " ("+s+")", Toast.LENGTH_LONG);
+            toast.show();
         }
         return res;
+    }
+
+    char getDecimalSeparator(){
+        DecimalFormatSymbols sym = ((DecimalFormat)numberFormat).getDecimalFormatSymbols();
+        return sym.getDecimalSeparator();
     }
 }
