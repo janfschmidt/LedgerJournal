@@ -275,7 +275,7 @@ public class JournalActivity extends AppCompatActivity {
 
     protected void deleteExportedDialog() {
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setMessage(getResources().getString(R.string.dialog_deleteexported_1)+" "+journal.size()+" "+ getResources().getString(R.string.dialog_deleteexported_2)+" "+ journal.name +  getResources().getString(R.string.dialog_deleteexported_3));
+        alert.setMessage(getResources().getString(R.string.dialog_deleteexported_1)+" "+journal.size()+" "+ getResources().getString(R.string.dialog_deleteexported_2)+" "+ journal.name +" "+  getResources().getString(R.string.dialog_deleteexported_3));
         alert.setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 clearJournal();

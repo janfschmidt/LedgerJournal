@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         alert.setTitle(R.string.app_name);
         try {
             PackageInfo p = getPackageManager().getPackageInfo(getPackageName(),0);
-            alert.setMessage("Version "+ p.versionName + " (Build "+p.versionCode+")");
+            alert.setMessage("Version "+ p.versionName + " (Build "+p.versionCode+")\nLicense: GPLv3");
         } catch (PackageManager.NameNotFoundException e) {
             //should never be called?
         }
