@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2017 Jan Felix Schmidt <janschmidt@mailbox.org>
+  ~ Copyright (c) 2016-2017 Jan Felix Schmidt <janschmidt@mailbox.org>
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -58,6 +58,9 @@
     <string name="share_subject">Export</string>
     <string name="toast_addtemplate">Transaktion zu Vorlagen hinzugefügt.</string>
     <string name="toast_exportfile">Datei gespeichert:</string>
+    <string name="toast_exportfile_error">Fehler beim speichern von</string>
+    <string name="toast_permission_denied">LedgerJournal darf nicht in den Speicher zu schreiben. Deshalb kann es das Journal nicht exportieren.</string>
+    <string name="toast_permission_granted">Danke. Probier jetzt nochmal zu exportieren.</string>
     <string name="toast_maxpostings">Maximale Anzahl an Postings erreicht.</string>
     <string name="preference_delete_entries_always">exportierte Transaktionen immer automatisch löschen</string>
     <string name="preference_delete_entries_ask">bei jedem Export nachfragen</string>

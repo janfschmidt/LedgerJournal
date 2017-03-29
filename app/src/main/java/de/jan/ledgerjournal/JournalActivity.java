@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Jan Felix Schmidt <janschmidt@mailbox.org>
+ * Copyright (c) 2016-2017 Jan Felix Schmidt <janschmidt@mailbox.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,18 @@
 
 package de.jan.ledgerjournal;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -56,6 +60,8 @@ public class JournalActivity extends AppCompatActivity {
 
     JournalDataSource dataSource;
     SharedPreferences sharedPref;
+
+    private static final int REQUEST_WRITE_STORAGE = 42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,6 +205,24 @@ public class JournalActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode)
+        {
+            case REQUEST_WRITE_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    Toast.makeText(this, getResources().getString(R.string.toast_permission_granted), Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(this, getResources().getString(R.string.toast_permission_denied), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+    }
 
     private void showAllJournalTransactions() {
         journal.set(dataSource.getAllTransactions(topfId));
@@ -237,8 +261,22 @@ public class JournalActivity extends AppCompatActivity {
 
 
     private void saveToFile() {
-        journal.export( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)), Integer.parseInt(sharedPref.getString("exportwidth", "35")) );
-        Toast toast = Toast.makeText(this, getResources().getString(R.string.toast_exportfile) +" "+ journal.exportFilePath( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)) ), Toast.LENGTH_LONG);
+        // check permission
+        boolean hasPermission = (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+        if (!hasPermission) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_STORAGE);
+        }
+        int ret = journal.export( sharedPref.getString("exportpath", SettingsActivity.defaultPath(this)), Integer.parseInt(sharedPref.getString("exportwidth", "35")) );
+        Toast toast;
+        if(ret==0) {
+            toast = Toast.makeText(this, getResources().getString(R.string.toast_exportfile) + " " + journal.exportFilePath(sharedPref.getString("exportpath", SettingsActivity.defaultPath(this))), Toast.LENGTH_LONG);
+        }
+        else {
+            toast = Toast.makeText(this, getResources().getString(R.string.toast_exportfile_error) + " " + journal.exportFilePath(sharedPref.getString("exportpath", SettingsActivity.defaultPath(this))), Toast.LENGTH_LONG);
+        }
         toast.show();
         if (topfId != JournalDbHelper.TEMPLATE_TOPFID) // deleting templates after export makes no sense
             deleteExported();

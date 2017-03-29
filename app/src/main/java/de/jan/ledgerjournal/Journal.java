@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Jan Felix Schmidt <janschmidt@mailbox.org>
+ * Copyright (c) 2016-2017 Jan Felix Schmidt <janschmidt@mailbox.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,12 +56,12 @@ public class Journal {
 
 
     // export journal to text file
-    public void export(String exportDir, int width) {
+    public int export(String exportDir, int width) {
         String storageState = Environment.getExternalStorageState();
         if (storageState.equals(Environment.MEDIA_MOUNTED)) {
                 File dir = new File( exportDir );
-                if (!dir.exists()) {
-                    dir.mkdirs();
+                if (!dir.exists() && !dir.mkdirs()) {
+                    return 1;
                 }
             try {
                 FileWriter writer = new FileWriter( new File(dir, exportFilename()) );
@@ -77,9 +77,11 @@ public class Journal {
                 Log.d("Journal.export", "Wrote file " + exportFilePath(exportDir));
             } catch (IOException e) {
                 e.printStackTrace();
+                return 2;
             }
         }
+        return 0;
     }
-    public void export(String exportDir) {export(exportDir, 35);}
+    public int export(String exportDir) {return export(exportDir, 35);}
 
 }
