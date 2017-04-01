@@ -1,4 +1,5 @@
 # LedgerJournal
+
 **keep your journals up-to-date with a simple Android App**
 
 This is an Android App to create transactions for John Wiegley's great double-entry accounting
@@ -12,6 +13,7 @@ But what's about cash transactions? I wrote this app to be able to make a note o
 immediately and then just export them in Ledger format.
 
 ## Features
+
 - create multiple journals
 - add and edit transactions with up to 4 postings
 - autocompletion of accounts for known payees (from templates)
